@@ -168,7 +168,7 @@ a{
 			width: 100%;
 			border-radius: 10px;
 			box-shadow:
-				0 0 0 1px rgba(white,.1),
+				0 0 0 1px rgba(white,.05),
 				0 50px 200px -50px rgba(black,.75);
 		}
 		&:not(.zoom){
@@ -177,7 +177,7 @@ a{
 			margin: -80px 10px 0;
 			border-radius: 5px;
 			box-shadow:
-				0 0 0 1px rgba(white,.1),
+				0 0 0 1px rgba(white,.05),
 				0 10px 40px rgba(black,.25);
 			cursor: pointer;
 		}
@@ -186,6 +186,7 @@ a{
 
 .content{
 	z-index: 1;
+	position: relative;
 	flex: 1;
 	padding: 0 50px;
 }
