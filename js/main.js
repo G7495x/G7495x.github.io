@@ -81,3 +81,9 @@ init()
 
 window.addEventListener('resize',init,true)
 
+let currentPage=0
+const gotoPage=(n)=>{
+	document.body.style.setProperty('--slide',n)
+}
+const nextPage=()=>{ gotoPage(++currentPage) }
+const prevPage=()=>{ gotoPage(--currentPage) }

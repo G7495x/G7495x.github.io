@@ -11,22 +11,19 @@ $accent: hsl(210,20%,30%);
 	flex-shrink: 0;
 }
 
-html{
-	background-color: black;
-	color: $text-color;
-}
-
 body{
-	margin: 0;
+	display: flex;
 	position: fixed;
 	top: 0;
 	right: 0;
 	bottom: 0;
 	left: 0;
 	min-width: 1200px;
-	overflow: hidden;
+	margin: 0;
+	overflow-x: hidden;
 	background: $bg-color url(../imgs/bg.png) top fixed no-repeat;
 	background-size: contain;
+	color: $text-color;
 }
 
 h1,
@@ -57,13 +54,13 @@ a{
 
 #G7495x{
 	z-index: 10;
-	img+div{ background-color: rgba($bg-color,.875) !important; }
+	img+div{ background-color: rgba($bg-color,.75) !important; }
 }
 
 .container{
 	@media (min-width: 1200px){
-		margin-left: calc(50% - 600px);
-		margin-right: calc(50% - 600px);
+		padding-left: calc(50% - 600px);
+		padding-right: calc(50% - 600px);
 	}
 }
 
@@ -93,21 +90,51 @@ a{
 }
 
 #main-container{
+	--slide: 0;
+	display: flex;
 	position: relative;
-	width: 100%;
-	max-width: 1200px;
 	height: 100%;
 }
 
 .page{
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
+	@extend .container;
+	--offset: calc(var(--slide) * -100%);
+	transform: translateX(var(--offset));
+	width: 100%;
 	padding-top: 100px;
 	overflow-y: auto;
-	&:not(.active){ visibility: hidden; }
+	@supports(-webkit-overflow-scrolling: touch){
+		overflow-y: scroll;
+		-webkit-overflow-scrolling: touch;
+	}
+	transition: all 1.5s;
+	// &:not(.active){ opacity: 0; }
+	&:last-of-type .fa-chevron-right{ display: none; }
+}
+
+.fa-chevron-right,
+.fa-chevron-left{
+	transform: rotate(45deg);
+	margin-left: 25px;
+	border-radius: 5px;
+	padding: 6px 10px;
+	color: $text-light;
+	background-image: radial-gradient(circle at top left,rgba($text-light,.0375),transparent);
+	box-shadow: 0 0 0 1px rgba($text-light,.125);
+	cursor: pointer;
+	&::before{
+		display: inline-block;
+	}
+}
+
+.fa-chevron-right::before{ transform: rotate(-45deg) translateX(2.5px) scale(.75); }
+.fa-chevron-left::before{ transform: rotate(-45deg) translateX(-2.5px) scale(.75); }
+
+.slide-controls{
+	display: flex;
+	justify-content: flex-end;
+	margin-top: -40px;
+	padding-right: 125px;
 }
 
 .flex{
@@ -171,24 +198,13 @@ a{
 #page1{
 	display: flex;
 	align-items: center;
-	padding: 80px 0;
+	padding-bottom: 80px;
 	.content{
 		margin-left: -100px;
 		border-left: 1px solid rgba($text-light,.25);
 	}
 	.fa-chevron-right{
-		transform: rotate(45deg);
 		margin-left: 5px;
 		margin-top: 30px;
-		border-radius: 5px;
-		padding: 6px 10px;
-		color: $text-light;
-		background-image: radial-gradient(circle at top left,rgba($text-light,.0375),transparent);
-		box-shadow: 0 0 0 1px rgba($text-light,.125);
-		cursor: pointer;
-		&::before{
-			transform: rotate(-45deg) translateX(2.5px) scale(.75);
-			display: inline-block;
-		}
 	}
 }
