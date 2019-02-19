@@ -1,4 +1,4 @@
-$bg-color: hsl(210,10%,5%);
+$bg-color: hsl(210,100%,2%);
 $text-color: hsl(210,10%,90%);
 $text-light: hsla(210,40%,80%,.5);
 $accent: hsl(210,20%,30%);
@@ -18,8 +18,14 @@ html{
 
 body{
 	margin: 0;
-	min-height: 100vh;
-	background: url(../imgs/bg.png) top fixed no-repeat;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	min-width: 1200px;
+	overflow: hidden;
+	background: $bg-color url(../imgs/bg.png) top fixed no-repeat;
 	background-size: contain;
 }
 
@@ -49,6 +55,11 @@ a{
 
 .t-light{ color: $text-light; }
 
+#G7495x{
+	z-index: 10;
+	img+div{ background-color: rgba($bg-color,.875) !important; }
+}
+
 .container{
 	@media (min-width: 1200px){
 		margin-left: calc(50% - 600px);
@@ -56,17 +67,8 @@ a{
 	}
 }
 
-.page{
-	display: flex;
-}
-
-.img-section{
-	margin-left: 50px;
-	margin-right: -100px;
-	// transform: perspective(800px) rotateY(15deg);
-}
-
 #contact{
+	z-index: 1;
 	position: fixed;
 	top: 0;
 	right: 0;
@@ -90,15 +92,89 @@ a{
 	}
 }
 
-#page1{
+#main-container{
+	position: relative;
+	width: 100%;
+	max-width: 1200px;
+	height: 100%;
+}
+
+.page{
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	padding-top: 100px;
+	overflow-y: auto;
+	&:not(.active){ visibility: hidden; }
+}
+
+.flex{
+	display: flex;
 	align-items: center;
-	min-height: 100vh;
+}
+
+.img-section{
+	$width: 600px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: flex-end;
+	position: relative;
+	left: 100px;
+	width: $width;
+	margin-right: -50px;
+	perspective: $width;
+	transform: perspective($width);
+	&:not(:hover){
+		transform: perspective($width) rotateY(15deg);
+		img:not(.zoom){
+			transform: translate3D(-30px,0,25px);
+		}
+	}
+	transition: all 1s;
+	img{
+		transition: all 1s;
+		&.zoom{
+			order: -1;
+			width: 100%;
+			border-radius: 10px;
+			box-shadow:
+				0 0 0 1px rgba(white,.1),
+				0 50px 200px -50px rgba(black,.75);
+		}
+		&:not(.zoom){
+			transform: translateX(-10px);
+			height: 100px;
+			margin: -80px 10px 0;
+			border-radius: 5px;
+			box-shadow:
+				0 0 0 1px rgba(white,.1),
+				0 10px 40px rgba(black,.25);
+			cursor: pointer;
+		}
+	}
+}
+
+.content{
+	z-index: 1;
+	flex: 1;
+	padding: 0 50px;
+}
+
+.description{
+	padding: 50px 100px;
+	>*{ margin-bottom: 20px; }
+}
+
+#page1{
+	display: flex;
+	align-items: center;
+	padding: 80px 0;
 	.content{
-		z-index: 1;
-		flex: 1;
 		margin-left: -100px;
-		padding: 0 50px;
-		box-shadow: -1px 0 rgba($text-light,.25);
+		border-left: 1px solid rgba($text-light,.25);
 	}
 	.fa-chevron-right{
 		transform: rotate(45deg);

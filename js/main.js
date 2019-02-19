@@ -1,4 +1,3 @@
-const piBy180=Math.PI/180
 const twoPi=Math.PI*2
 const piByTwo=Math.PI/2
 
@@ -10,11 +9,6 @@ const renderer=new THREE.WebGLRenderer({
 	preserveDrawingBuffer: true,
 })
 renderer.setSize(600,600)
-renderer.setPixelRatio(window.devicePixelRatio)
-
-window.addEventListener('resize',()=>{
-	renderer.setPixelRatio(window.devicePixelRatio)
-},true)
 
 const scene=new THREE.Scene()
 const camera=new THREE.PerspectiveCamera(45,600/600,.01,1000)
@@ -73,3 +67,17 @@ const animate=()=>{
 	renderer.render(scene,camera)
 	requestAnimationFrame(animate)
 }
+
+let prevWindowInnerWidth=0
+const init=()=>{
+	renderer.setPixelRatio(window.devicePixelRatio)
+	if(prevWindowInnerWidth!=window.innerWidth && window.innerWidth<1200)
+		document.querySelector('meta[name="viewport"]').setAttribute('content','width=device-width,initial-scale='+(window.innerWidth/1200))
+	else
+		document.querySelector('meta[name="viewport"]').setAttribute('content','width=device-width,initial-scale=1.0')
+	prevWindowInnerWidth=window.innerWidth
+}
+init()
+
+window.addEventListener('resize',init,true)
+
