@@ -1,6 +1,6 @@
 $bg-color: hsl(210,100%,2%);
 $text-color: hsl(210,10%,90%);
-$text-light: hsla(210,40%,80%,.5);
+$text-light: hsla(210,40%,80%,.6);
 $accent: hsl(210,20%,30%);
 
 *,
@@ -18,7 +18,7 @@ body{
 	right: 0;
 	bottom: 0;
 	left: 0;
-	min-width: 1200px;
+	width: 1200px;
 	margin: 0;
 	overflow-x: hidden;
 	background: $bg-color url(../imgs/bg.png) top fixed no-repeat;
@@ -96,7 +96,7 @@ a{
 	height: 100%;
 }
 
-.page{
+page{
 	@extend .container;
 	--offset: calc(var(--slide) * -100%);
 	transform: translateX(var(--offset));
@@ -169,16 +169,19 @@ a{
 			border-radius: 10px;
 			box-shadow:
 				0 0 0 1px rgba(white,.05),
-				0 50px 200px -50px rgba(black,.75);
+				// 0 50px 200px -50px rgba(black,.75);
+				0 25px 50px -12.5px rgba(0, 0, 0, 0.375);
 		}
 		&:not(.zoom){
 			transform: translateX(-10px);
+			max-width: 25%;
 			height: 100px;
 			margin: -80px 10px 0;
 			border-radius: 5px;
+			object-fit: cover;
 			box-shadow:
 				0 0 0 1px rgba(white,.05),
-				0 10px 40px rgba(black,.25);
+				0 10px 40px rgba(black,.125);
 			cursor: pointer;
 		}
 	}
@@ -186,6 +189,7 @@ a{
 
 .content{
 	z-index: 1;
+	transform: translateZ(1px);
 	position: relative;
 	flex: 1;
 	padding: 0 50px;
@@ -193,6 +197,7 @@ a{
 
 .description{
 	padding: 50px 100px;
+	text-align: justify;
 	>*{ margin-bottom: 20px; }
 }
 
