@@ -162,6 +162,7 @@ page {
     .img-section img.zoom {
       order: -1;
       width: 100%;
+      height: 450px;
       border-radius: 10px;
       box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 25px 50px -12.5px rgba(0, 0, 0, 0.375); }
     .img-section img:not(.zoom) {
