@@ -101,6 +101,7 @@ a{
 		--offset: calc(var(--slide) * var(--step));
 		transform: translateX(var(--offset));
 		transition: transform 1s;
+		will-change: transform;
 	}
 }
 
@@ -116,6 +117,7 @@ page{
 		-webkit-overflow-scrolling: touch;
 	}
 	transition: all 1.5s;
+	will-change: transform;
 	// &:not(.active){ opacity: 0; }
 	&:last-of-type .fa-chevron-right{ display: none; }
 }
@@ -173,7 +175,10 @@ page{
 			0 25px 50px -12.5px rgba(0, 0, 0, 0.375);
 	}
 	>.slides{
-		--step: -140px;
+		$width: 120px;
+		$height: 90px;
+		$spacing: 20px;
+		--step: #{-1*($width+$spacing))};
 		position: absolute;
 		right: 0px;
 		bottom: -45px;

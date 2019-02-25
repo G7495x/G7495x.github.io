@@ -161,7 +161,7 @@ for(let i of pageData){
 		<div class="flex">
 			<div class="img-section">
 				<img src="${i.images[0]}">
-				<div class="slides">
+				<div class="slides" style="--slide: 1">
 					<div class="h7 fa fa-chevron-left" onclick="prevPage(this.parentNode)"></div>
 					${imagesHtml}
 					<div class="h7 fa fa-chevron-right" onclick="nextPage(this.parentNode)"></div>
@@ -185,6 +185,9 @@ for(let i of pageData){
 	</page>`
 }
 document.body.innerHTML=document.body.innerHTML.replace('<page id="placeholder"></page>',pageHtml)
+
+// Exceptional Cases
+document.querySelector('page:nth-of-type(4) .slides').style.setProperty('--slide','0')
 
 // Page 1 Revolving Signature
 const twoPi=Math.PI*2

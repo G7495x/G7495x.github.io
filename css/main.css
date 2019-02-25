@@ -102,7 +102,8 @@ a {
   .slides > * {
     --offset: calc(var(--slide) * var(--step));
     transform: translateX(var(--offset));
-    transition: transform 1s; }
+    transition: transform 1s;
+    will-change: transform; }
 
 page {
   --offset: calc(var(--slide) * -100%);
@@ -110,7 +111,8 @@ page {
   width: 100%;
   padding-top: 100px;
   overflow-y: auto;
-  transition: all 1.5s; }
+  transition: all 1.5s;
+  will-change: transform; }
   @supports (-webkit-overflow-scrolling: touch) {
     page {
       overflow-y: scroll;
