@@ -155,7 +155,7 @@ let pageHtml=''
 for(let i of pageData){
 	let imagesHtml=''
 	for(let j of i.images)
-		imagesHtml+=`<img src="${j}">\n`
+		imagesHtml+=`<img src="${j}" onclick="setImg(this)">\n`
 	pageHtml+=`
 	<page>
 		<div class="flex">
@@ -185,6 +185,11 @@ for(let i of pageData){
 	</page>`
 }
 document.body.innerHTML=document.body.innerHTML.replace('<page id="placeholder"></page>',pageHtml)
+
+const setImg=(ele)=>{
+	const src=ele.getAttribute('src')
+	ele.parentNode.previousElementSibling.setAttribute('src',src)
+}
 
 // Exceptional Cases
 document.querySelector('page:nth-of-type(4) .slides').style.setProperty('--slide','0')
