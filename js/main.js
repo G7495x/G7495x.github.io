@@ -161,7 +161,7 @@ for(let i of pageData){
 		<div class="flex">
 			<div class="img-section">
 				<img src="${i.images[0]}">
-				<div class="slides" style="--slide: 1">
+				<div class="slides">
 					<div class="h7 fa fa-chevron-left" onclick="prevPage(this.parentNode)"></div>
 					${imagesHtml}
 					<div class="h7 fa fa-chevron-right" onclick="nextPage(this.parentNode)"></div>
