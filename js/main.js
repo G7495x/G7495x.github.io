@@ -10,7 +10,7 @@ const init=()=>{
 init()
 
 // Page Controller
-const gotoPage=(ele,n)=>{ ele.style.setProperty('--slide',n) }
+const gotoPage=(ele=document.body,n=0)=>{ ele.style.setProperty('--slide',n) }
 const nextPage=(ele=document.body)=>{
 	let currentPage=window.getComputedStyle(ele).getPropertyValue('--slide')
 	gotoPage(ele,++currentPage)
@@ -126,9 +126,9 @@ const pageData=[
 			'imgs/7/3.png',
 		],
 		description: `
-			This is one of my projects from my undergrad, done in OpenGL and C++. It is an audio visualizer application that inputs an audio file and the visualizer dances to the tones in the music as it plays. This application was done as part of the semester project for the subject ‘Computer Graphics’. This project was implemented using the OpenGL Utility Toolkit [GLUT] library and the FMOD Audio API. This design was the final outcome of a lot of prototypes and try-outs.
+			This is one of my projects from my undergrad, done in OpenGL and C++. It is an audio visualizer application that inputs an audio file and the visualizer dances to the tones in the music as it plays. This application was done as part of the semester project for the subject ‘Computer Graphics’. This project was implemented using the OpenGL Utility Toolkit [GLUT] library and the FMOD Audio API. This design was the final outcome of multiple prototypes and try-outs.
 			<br><br>
-			A warped solenoid that dances to the music with a multi-point color gradient for the coloring, achieves a minimal and a pleasant look & feel. The audio algorithm was highly optimized to be a balance between smooth and reactive, so as to match the aesthetic of the visualizer. 3 parallel threads had to be used - one for playing the audio, another for extracting the audio samples and passing it through an FFT filter to obtain the bars and waveforms, and finally a last one for the visualizing the graphics. The end result, a smooth yet reactive visualizer that is floating and swaying in space with a starry background and this proved to be quite enticing and captivating.
+			A warped solenoid that dances to the music with a multi-point color gradient for the coloring, achieves a minimal and a pleasant look & feel. The audio algorithm was highly optimized to be a balance between smooth and reactive, so as to match the aesthetic of the visualizer. 3 parallel threads had to be used - one for playing the audio, another for extracting the audio samples and passing it through an FFT filter to obtain the bars and waveforms, and finally a last one for the visualizing the graphics. The end result, a smooth yet reactive visualizer that is floating and swaying in space with a starry background which proved to be quite enticing and captivating.
 		`
 	},
 	{
@@ -138,7 +138,7 @@ const pageData=[
 			'imgs/5/1.png',
 		],
 		description: `
-			This project was my first attempt at using shaders, done in WebGL. In this project, I have tried to create a high-fidelity transition effect for transitioning 2 images/textures. With the use of shaders, I was able to achieve the above depicted geometric transformation with a smooth animation. This particular demo is completely interactive and the user can easily control the phase of the animation with the pointer drag. While this in itself is quite simplistic, this effect can be easily carried over to any 3D shape or model to achieve some truly stunning examples. This project was achieved entirely through code without using any tools/engines. The effect achieved here is fully GPU accelerated and all the computations are carried out entirely on the GPU. For this project, I have used Three.js - A Javascript- based wrapper library for WebGL - and this project was done in Javascript and GLSL - The OpenGL compatible shading language.
+			This project was my first attempt at using shaders, done in WebGL. In this project, I have tried to create a high-fidelity transition effect for transitioning 2 images/textures. With the use of shaders, I was able to achieve the above depicted geometric transformation with a smooth animation. This particular demo is completely interactive and the user can easily control the phase of the animation by dragging the pointer. While this in itself is quite simplistic, this effect can be easily carried over to any 3D shape or model to achieve some truly stunning examples. This project was achieved entirely through code without using any tools/engines. The effect achieved here is fully GPU accelerated and all the computations are carried out entirely on the GPU. For this project, I have used Three.js - A Javascript- based wrapper library for WebGL - and this project was done in Javascript and GLSL - The OpenGL compatible shading language.
 			<br><br>
 			WebGL (Web Graphics Library) is a JavaScript API for rendering interactive 3D graphics within any compatible modern web browser without the use of plug-ins. WebGL does so by introducing an API that closely conforms to the OpenGL ES 2.0 standard that can be used in HTML5 &lt;canvas&rt; elements.
 			<br><br>
@@ -160,23 +160,26 @@ for(let i of pageData){
 	<page>
 		<div class="flex">
 			<div class="img-section">
-				<img src="${i.images[0]}">
-				<div class="slides" style="--slide: 1">
+				<img src="${i.images[0]}" onclick="this.parentNode.classList.add('zoom')">
+				<div class="fa fa-mouse-pointer"> Fullscreen</div>
+				<div class="slides" style="--slide: 1" data-slides="${i.images.length}">
 					<div class="h7 fa fa-chevron-left" onclick="prevPage(this.parentNode)"></div>
 					${imagesHtml}
 					<div class="h7 fa fa-chevron-right" onclick="nextPage(this.parentNode)"></div>
 				</div>
+				<div class="fa fa-times" onclick="this.parentNode.classList.remove('zoom')"></div>
 			</div>
 			<div class="content">
 				<h1>${i.title}</h1>
 				<div class="t-light">${i.subTitle}</div>
 				<div style="height: 40px"></div>
-				<div class="h7 t-light">[Individual Project]</div>
+				<div class="h7 t-light project-strength">Individual Project</div>
 			</div>
 		</div>
 		<div class="slide-controls">
 			<div class="h3 fa fa-chevron-left" onclick="prevPage()"></div>
 			<div class="h3 fa fa-chevron-right" onclick="nextPage()"></div>
+			<div class="fa fa-caret-left" onclick="gotoPage()">Back to Home</div>
 		</div>
 		<div class="description">
 			<h5><b>Description</b></h5>
@@ -188,11 +191,12 @@ document.body.innerHTML=document.body.innerHTML.replace('<page id="placeholder">
 
 const setImg=(ele)=>{
 	const src=ele.getAttribute('src')
-	ele.parentNode.previousElementSibling.setAttribute('src',src)
+	ele.parentNode.previousElementSibling.previousElementSibling.setAttribute('src',src)
 }
 
 // Exceptional Cases
 document.querySelector('page:nth-of-type(4) .slides').style.setProperty('--slide','0')
+document.querySelector('page:nth-of-type(8) .slides').style.setProperty('--slide','0')
 
 // Page 1 Revolving Signature
 const twoPi=Math.PI*2
