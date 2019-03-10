@@ -165,7 +165,7 @@ page{
 	$height: 450px;
 	position: relative;
 	left: 100px;
-	max-width: $width;
+	width: $width;
 	height: $height;
 	margin-right: -50px;
 	perspective: $width;
@@ -181,7 +181,7 @@ page{
 	}
 	&.zoom{
 		transform: initial;
-		z-index: 11;
+		z-index: 10;
 		position: fixed;
 		top: 0;
 		right: 0;
@@ -196,10 +196,6 @@ page{
 			from{ transform: scale(0); }
 			to{ transform: initial; }
 		}
-		@keyframes slide-up{
-			from{ transform: translateY(200%); }
-			to{ transform: initial; }
-		}
 		>img{
 			width: calc(100% - 40px);
 			height: calc(100% - 210px);
@@ -211,6 +207,10 @@ page{
 			animation: zoom 2s cubic-bezier(0.075,0.82,0.165,1);
 		}
 		>.fa-mouse-pointer{ display: none; }
+		@keyframes slide-up{
+			from{ transform: translateY(500%); }
+			to{ transform: initial; }
+		}
 		>.slides{
 			transform: initial;
 			position: absolute;
@@ -218,8 +218,9 @@ page{
 			bottom: -10px;
 			left: 0;
 			margin: auto;
-			animation: slide-up 1s 1s cubic-bezier(0.075,0.82,0.165,1) backwards;
+			animation: slide-up 2s cubic-bezier(0.075,0.82,0.165,1);
 		}
+		+.content{ opacity: 0; }
 	}
 	img{ object-fit: cover; }
 	>img{

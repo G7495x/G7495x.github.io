@@ -161,7 +161,7 @@ page {
 .img-section {
   position: relative;
   left: 100px;
-  max-width: 600px;
+  width: 600px;
   height: 450px;
   margin-right: -50px;
   perspective: 600px;
@@ -176,7 +176,7 @@ page {
       opacity: 0; }
   .img-section.zoom {
     transform: initial;
-    z-index: 11;
+    z-index: 10;
     position: fixed;
     top: 0;
     right: 0;
@@ -193,12 +193,6 @@ page {
     transform: scale(0); }
   to {
     transform: initial; } }
-
-@keyframes slide-up {
-  from {
-    transform: translateY(200%); }
-  to {
-    transform: initial; } }
     .img-section.zoom > img {
       width: calc(100% - 40px);
       height: calc(100% - 210px);
@@ -210,6 +204,12 @@ page {
       animation: zoom 2s cubic-bezier(0.075, 0.82, 0.165, 1); }
     .img-section.zoom > .fa-mouse-pointer {
       display: none; }
+
+@keyframes slide-up {
+  from {
+    transform: translateY(500%); }
+  to {
+    transform: initial; } }
     .img-section.zoom > .slides {
       transform: initial;
       position: absolute;
@@ -217,7 +217,9 @@ page {
       bottom: -10px;
       left: 0;
       margin: auto;
-      animation: slide-up 1s 1s cubic-bezier(0.075, 0.82, 0.165, 1) backwards; }
+      animation: slide-up 2s cubic-bezier(0.075, 0.82, 0.165, 1); }
+    .img-section.zoom + .content {
+      opacity: 0; }
   .img-section img {
     object-fit: cover; }
   .img-section > img {
