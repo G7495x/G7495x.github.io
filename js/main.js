@@ -179,7 +179,7 @@ for(let i of pageData){
 		<div class="slide-controls">
 			<div class="h3 fa fa-chevron-left" onclick="prevPage()"></div>
 			<div class="h3 fa fa-chevron-right" onclick="nextPage()"></div>
-			<div class="fa fa-caret-left" onclick="gotoPage()">Back to Home</div>
+			<div class="fa fa-caret-left" onclick="gotoPage()" style="width: auto">Back to Home</div>
 		</div>
 		<div class="description">
 			<h5><b>Description</b></h5>
