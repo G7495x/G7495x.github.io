@@ -1,0 +1,101 @@
+@import '~supergrids.css/src/scss/mixins';
+@import '_animations';
+
+$red-0000: hsl(5,100%,65%);
+$red-1000: hsl(5,100%,30%);
+
+$red-0250: mix($red-0000,$red-1000,25%);
+$red-0500: mix($red-0000,$red-1000,50%);
+$red-0750: mix($red-0000,$red-1000,75%);
+
+$green-0000: hsl(80,95%,67.5%);
+$green-1000: hsl(88.5,70%,45%);
+
+$green-0250: mix($green-0000,$green-1000,25%);
+$green-0500: mix($green-0000,$green-1000,50%);
+$green-0750: mix($green-0000,$green-1000,75%);
+
+$yellow-0000: hsl(55,100%,60%);
+$yellow-1000: hsl(50,100%,55%);
+
+$yellow-0250: mix($yellow-0000,$yellow-1000,25%);
+$yellow-0500: mix($yellow-0000,$yellow-1000,50%);
+$yellow-0750: mix($yellow-0000,$yellow-1000,75%);
+
+$cyan-0000: hsl(180,100%,50%);
+$cyan-1000: hsl(190,100%,50%);
+
+$accent-0000: $cyan-0000;
+$accent-1000: $cyan-1000;
+
+$accent-0250: mix($accent-0000,$accent-1000,25%);
+$accent-0500: mix($accent-0000,$accent-1000,50%);
+$accent-0750: mix($accent-0000,$accent-1000,75%);
+
+$gray-hue: 220;
+$gray-sat: 0%;
+
+$gray-0000: hsl($gray-hue,$gray-sat,  0.0%);
+$gray-0025: hsl($gray-hue,$gray-sat,  2.5%);
+$gray-0050: hsl($gray-hue,$gray-sat,  5.0%);
+$gray-0075: hsl($gray-hue,$gray-sat,  7.5%);
+$gray-0100: hsl($gray-hue,$gray-sat, 10.0%);
+$gray-0125: hsl($gray-hue,$gray-sat, 12.5%);
+$gray-0150: hsl($gray-hue,$gray-sat, 15.0%);
+$gray-0175: hsl($gray-hue,$gray-sat, 17.5%);
+$gray-0200: hsl($gray-hue,$gray-sat, 20.0%);
+$gray-0225: hsl($gray-hue,$gray-sat, 22.5%);
+$gray-0250: hsl($gray-hue,$gray-sat, 25.0%);
+$gray-0275: hsl($gray-hue,$gray-sat, 27.5%);
+$gray-0300: hsl($gray-hue,$gray-sat, 30.0%);
+$gray-0325: hsl($gray-hue,$gray-sat, 32.5%);
+$gray-0350: hsl($gray-hue,$gray-sat, 35.0%);
+$gray-0375: hsl($gray-hue,$gray-sat, 37.5%);
+$gray-0400: hsl($gray-hue,$gray-sat, 40.0%);
+$gray-0425: hsl($gray-hue,$gray-sat, 42.5%);
+$gray-0450: hsl($gray-hue,$gray-sat, 45.0%);
+$gray-0475: hsl($gray-hue,$gray-sat, 47.5%);
+$gray-0500: hsl($gray-hue,$gray-sat, 50.0%);
+$gray-0525: hsl($gray-hue,$gray-sat, 52.5%);
+$gray-0550: hsl($gray-hue,$gray-sat, 55.0%);
+$gray-0575: hsl($gray-hue,$gray-sat, 57.5%);
+$gray-0600: hsl($gray-hue,$gray-sat, 60.0%);
+$gray-0625: hsl($gray-hue,$gray-sat, 62.5%);
+$gray-0650: hsl($gray-hue,$gray-sat, 65.0%);
+$gray-0675: hsl($gray-hue,$gray-sat, 67.5%);
+$gray-0700: hsl($gray-hue,$gray-sat, 70.0%);
+$gray-0725: hsl($gray-hue,$gray-sat, 72.5%);
+$gray-0750: hsl($gray-hue,$gray-sat, 75.0%);
+$gray-0775: hsl($gray-hue,$gray-sat, 77.5%);
+$gray-0800: hsl($gray-hue,$gray-sat, 80.0%);
+$gray-0825: hsl($gray-hue,$gray-sat, 82.5%);
+$gray-0850: hsl($gray-hue,$gray-sat, 85.0%);
+$gray-0875: hsl($gray-hue,$gray-sat, 87.5%);
+$gray-0900: hsl($gray-hue,$gray-sat, 90.0%);
+$gray-0925: hsl($gray-hue,$gray-sat, 92.5%);
+$gray-0950: hsl($gray-hue,$gray-sat, 95.0%);
+$gray-0975: hsl($gray-hue,$gray-sat, 97.5%);
+$gray-1000: hsl($gray-hue,$gray-sat,100.0%);
+
+//@mixin input-style{
+//	@include outline-input-style;
+//	border-radius: 8px;
+//	padding: 4px 8px;
+//}
+
+//@mixin button-style{
+//	@include button-input-style;
+//	border-radius: 8px;
+//	box-shadow: none;
+//	color: Hsla(var(--bgHSL),1);
+//	background-color: Hsla(var(--textHSL),1);
+//	background-image: linear-gradient(to right,Hsla(var(--bgHSL),0),Hsla(var(--bgHSL),.15));
+//}
+
+//@mixin card{
+//	background-color: Hsla(var(--bgH),var(--bgS),calc(var(--bgL) + 5%),var(--bgA));
+//	border-radius: 8px;
+//	box-shadow:
+//		0 5px 20px rgba(black,.1),
+//		0 0 0 var(--pixelSize) Hsla(var(--textHSL),.0125);
+//}

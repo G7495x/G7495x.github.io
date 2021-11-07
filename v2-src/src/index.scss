@@ -1,0 +1,40 @@
+@import '_variables';
+
+@include all-selector{
+}
+
+:root{
+	--mutedAlpha: 0.6;
+	@include hsla-split($accent-0500,accent);
+
+	--pixelRatio: 1;
+	@media only screen and (-webkit-min-device-pixel-ratio: 2){ --pixelRatio: 2 }
+	@media only screen and (   min--moz-device-pixel-ratio: 2){ --pixelRatio: 2 }
+	--pixelSize: calc(1px / var(--pixelRatio));
+
+	position: fixed;
+}
+
+body{
+	font-family: FontAwesome,'Bai Jamjuree',sans-serif;
+	font-weight: 500;
+
+	@include bg-color($gray-0950);
+	@include text-color($gray-0150);
+	&.dark-mode{
+		@include bg-color($gray-0100);
+		@include text-color($gray-0750);
+	}
+}
+
+body,
+#root{ display: contents }
+
+//@include button-inputs{ @include button-style }
+//
+//@include outline-inputs{
+//	@include input-style;
+//	&::placeholder{ color: Hsla(var(--textHSL),var(--mutedAlpha)) }
+//}
+
+//.card{ @include card }

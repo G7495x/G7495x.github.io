@@ -1,0 +1,17 @@
+{
+	"name": "G7495x.github.io",
+	"version": "1.0.0",
+	"description": "",
+	"main": "",
+	"scripts": {
+		"start": "concurrently \"browser-sync start --config ./bs-config.js\" \"sass -w scss:css\"",
+		"init": "npm i --save-dev browser-sync concurrently sass"
+	},
+	"author": "G7495x",
+	"license": "ISC",
+	"devDependencies": {
+		"browser-sync": "^2.27.7",
+		"concurrently": "^6.3.0",
+		"sass": "^1.43.4"
+	}
+}

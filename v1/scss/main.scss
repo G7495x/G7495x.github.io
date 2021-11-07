@@ -259,7 +259,7 @@ page{
 		$width: 120px;
 		$height: 90px;
 		$spacing: 20px;
-		--step: #{-1*($width+$spacing))};
+		--step: #{-1*($width+$spacing)};
 		position: absolute;
 		right: 0px;
 		bottom: -45px;
@@ -388,7 +388,7 @@ page{
 		$size: 400px;
 		transform: perspective($size*1.375) scale(.875) translateY($size*.5) rotateX(90deg) rotateZ(45deg);
 		position: relative;
-		right: (600px-$size)/2;
+		right: (600px - $size)/2;
 		width: $size;
 		margin-left: -$size;
 		opacity: .25;

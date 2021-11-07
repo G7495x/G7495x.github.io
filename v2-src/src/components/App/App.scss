@@ -1,0 +1,14 @@
+@import '../../_variables';
+
+#App{
+	position: relative;
+	width: 100%;
+	height: 100%;
+
+	background-color: Hsla(var(--bgHSL),var(--bgA));
+	color: Hsla(var(--textHSL),var(--textA));
+
+	//.scroll-content-wrapper{
+	//	transform: translateY(calc(1px * var(--scrollTop)));
+	//}
+}
