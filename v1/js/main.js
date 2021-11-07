@@ -229,7 +229,7 @@ const material=new THREE.MeshStandardMaterial({color: 0xffffff})
 let obj
 const objLoader=new THREE.OBJLoader()
 objLoader.load(
-	'../objs/g7495x.obj',
+	'./objs/g7495x.obj',
 	(o)=>{
 		obj=o
 		obj.children[0].scale.set(.001,.001,.001)
