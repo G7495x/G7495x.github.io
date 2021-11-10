@@ -1,6 +1,7 @@
 {
   "name": "g7495x",
   "version": "2.1.0",
+  "homepage": ".",
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
