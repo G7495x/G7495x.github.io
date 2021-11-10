@@ -1,4 +1,3 @@
-// TODO-FUTURE: @include hover
 // TODO-FUTURE: @property rules
 
 // Hide Scrollbars ------------------------------------------------------------
@@ -16,6 +15,8 @@
 // Container Styles -----------------------------------------------------------
 
 .scroll-container{
+	--smoothScrollDuration: 1.5;
+
 	--scrollRight: calc(var(--scrollWidth) - var(--scrollLeft) - var(--clientWidth));
 	--scrollBottom: calc(var(--scrollHeight) - var(--scrollTop) - var(--clientHeight));
 	--scrollXPhase: 0; // Handling 0/0 case
@@ -25,6 +26,16 @@
 
 	position: relative;
 	overflow: hidden;
+
+	&.scroll-x{
+		>.scroll-bar-x{ display: block }
+		>.scroll-viewport{ overflow-x: scroll }
+	}
+	&.scroll-y{
+		>.scroll-bar-y{ display: block }
+		>.scroll-viewport{ overflow-y: scroll }
+	}
+	&.smooth-scroll>.scroll-viewport{ scroll-behavior: initial }
 }
 
 .scroll-viewport{
@@ -32,6 +43,7 @@
 	height: 100%;
 	max-width: 100%;
 	max-height: 100%;
+	overflow: hidden;
 }
 
 .scroll-content-wrapper{
@@ -41,34 +53,8 @@
 	min-height: 100%;
 }
 
-// TODO-FUTURE: Safari iOS enable when no lag
-@supports not (-webkit-touch-callout: none){ // CSS specific to iOS devices
-	.scroll-smooth-window-wrapper{
-		width: calc(1px * var(--scrollWidth));
-		height: calc(1px * var(--scrollHeight));
-	}
-
-	.scroll-smooth-window{
-		position: sticky;
-		top: 0;
-		left: 0;
-		width: calc(1px * var(--clientWidth));
-		height: calc(1px * var(--clientHeight));
-		overflow: hidden;
-		>.scroll-content-wrapper{
-			transform: translate(
-					calc(-1px * var(--scrollLeft)),
-					calc(-1px * var(--scrollTop))
-			);
-			transition: transform 2s;
-		}
-	}
-}
-
 .scroll-viewport,
-.scroll-content-wrapper,
-.scroll-smooth-window-wrapper,
-.scroll-smooth-window{
+.scroll-content-wrapper{
 	margin: 0 !important;
 	border: none !important;
 	padding: 0 !important;
@@ -80,22 +66,10 @@
 	--scrollBarThickness: 4px;
 	&:hover{ --scrollBarThickness: 8px; }
 
+	display: none;
 	position: absolute;
 	margin: 2px;
-	transition:
-		opacity .5s;
-}
-
-.scroll-bar-y{
-	top: 0;
-	//right: 0;
-	bottom: var(--scrollBarThickness);
-
-	// Auto hide scrollbar if scrollHeight<=clientHeight
-	right: min(
-		calc((var(--scrollHeight) - var(--clientHeight)) * 1000px - 1000px), // scrollHeight<=clientHeight
-		0px                                                                  // scrollHeight>clientHeight
-	);
+	transition: opacity .5s;
 }
 
 .scroll-bar-x{
@@ -110,10 +84,23 @@
 	);
 }
 
+.scroll-bar-y{
+	top: 0;
+	//right: 0;
+	bottom: var(--scrollBarThickness);
+
+	// Auto hide scrollbar if scrollHeight<=clientHeight
+	right: min(
+		calc((var(--scrollHeight) - var(--clientHeight)) * 1000px - 1000px), // scrollHeight<=clientHeight
+		0px                                                                  // scrollHeight>clientHeight
+	);
+}
+
 .scroll-bar-thumb{
 	border-radius: 1000px;
 	padding: calc(var(--scrollBarThickness) / 2);
-	transition: transform .1s;
+	touch-action: none; // @use-gesture/react.useDrag
+	transition: transform .05s;
 }
 
 .scroll-bar-thumb-x{
@@ -128,5 +115,8 @@
 
 // Color Styles ---------------------------------------------------------------
 
-.scroll-bar-thumb{ background-color: Hsla(var(--textHSL),.75) }
-.scroll-container:not(:hover)>.scroll-bar{ opacity: .25 }
+.scroll-bar-thumb{
+	background-color: rgba(black,.75);
+	box-shadow: inset 0 0 0 .5px rgba(white,.25);
+}
+.scroll-container:not(:hover)>.scroll-bar{ opacity: .5 }

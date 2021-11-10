@@ -7,15 +7,15 @@ import useLocal from './useLocal'
  * `useMemoArrayDebug` prints changes.
  */
 function useMemoArray<Type extends any[]>(array:Type){
-	const oldArray=useLocal([]) as unknown as Type
-	const newArray=useLocal([]) as unknown as Type
+	const oldArray=useLocal([]) as Type
+	const newArray=useLocal([]) as Type
 	
 	let changed=false
 	for(let i in array){
 		newArray[i]=array[i]
 		oldArray[i]!==array[i] && (changed=true) && (oldArray[i]=array[i])
 	}
-	return changed?newArray.slice() as Type:newArray
+	return changed?(newArray.slice() as Type):newArray
 }
 
 /**
@@ -23,8 +23,8 @@ function useMemoArray<Type extends any[]>(array:Type){
  * `useMemoArrayDebug` prints changes.
  */
 export function useMemoArrayDebug<Type extends any[]>(array:Type){
-	const oldArray=useLocal([]) as unknown as Type
-	const newArray=useLocal([]) as unknown as Type
+	const oldArray=useLocal([]) as Type
+	const newArray=useLocal([]) as Type
 
 	const changed=[]
 	const oldVals=[]

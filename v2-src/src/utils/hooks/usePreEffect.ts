@@ -14,8 +14,7 @@ function usePreEffect(deps:any[],effect:PreEffectCallback){
 	const changed:any[]=[]
 
 	let didChange=false
-	for(let i in deps)
-		(changed[i]=oldDeps[i]!==deps[i]) && (didChange=true) && (oldDeps[i]=deps[i])
+	for(let i in deps) (changed[i]=oldDeps[i]!==deps[i]) && (didChange=true) && (oldDeps[i]=deps[i])
 	didChange && effect(deps,prevDeps,changed)
 }
 
