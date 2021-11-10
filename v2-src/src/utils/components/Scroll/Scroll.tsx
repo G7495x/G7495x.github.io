@@ -6,7 +6,7 @@ import {easing} from 'ts-easing'
 import './Scroll.scss'
 import useLocal from '../../hooks/useLocal'
 import useLifecycle from '../../hooks/useLifecycle'
-import globalAutoResizeObserver,{ResizeHandler} from '../../dom/globalAutoResizeObserver'
+import globalAutoResizeObserver from '../../dom/globalAutoResizeObserver'
 
 // TODO: CSS easing?, step size
 // TODO: scroll animation acceleration
