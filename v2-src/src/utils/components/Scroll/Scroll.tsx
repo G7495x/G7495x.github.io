@@ -1,32 +1,36 @@
 import React,{forwardRef,MutableRefObject,PropsWithoutRef,useRef} from 'react'
 import {clamp} from 'lodash'
-import {Handler,useDrag} from '@use-gesture/react'
+import {useGesture} from '@use-gesture/react'
 
 import './Scroll.scss'
 import useLocal from '../../hooks/useLocal'
 import useLifecycle from '../../hooks/useLifecycle'
 import globalAutoResizeObserver from '../../dom/globalAutoResizeObserver'
 
+// TODO: speed & accl css variables
 // TODO: CSS step multiplier
-// TODO: scroll step acceleration
-// TODO: Smooth drag
+// TODO: scroll step acceleration?
+// TODO-FUTURE: Scroll snapping support
 // TODO-FUTURE: memo() stackoverflow.com/questions/60669528/how-to-use-react-memo-with-a-component-contains-children
 
 export type ScrollElement=HTMLElement&{
 	scrollTopTarget:number
 	scrollLeftTarget:number
 
-	deltaX:number
-	deltaY:number
+	smooth:boolean // used in smoothScroll (default parameter). Updated onWheel and onScrollbarDrag
+	duration:number // used in smoothScroll (default parameter). Updated onWheel and onScrollbarDrag
 
-	wheelXTimestamp:number
-	wheelYTimestamp:number
+	deltaX:number // Used only in smoothScroll
+	deltaY:number // Used only in smoothScroll
 
-	smoothScrollXBase:number
-	smoothScrollYBase:number
+	wheelXTimestamp:number // Used in smoothScroll
+	wheelYTimestamp:number // Used in smoothScroll
 
-	animatingX:boolean
-	animatingY:boolean
+	smoothScrollXBase:number // Used in smoothScroll (Exponential ease base value)
+	smoothScrollYBase:number // Used in smoothScroll (Exponential ease base value)
+
+	animatingX:boolean // Indicates if smoothScroll animation loop is active
+	animatingY:boolean // Indicates if smoothScroll animation loop is active
 }
 
 export default forwardRef<any,PropsWithoutRef<any>>(function Scroll({
@@ -48,10 +52,10 @@ export default forwardRef<any,PropsWithoutRef<any>>(function Scroll({
 				<div className="scroll-content-wrapper" data-onresize="scrollContentWrapperResize">{children}</div>
 			</div>
 			<div className="scroll-bar scroll-bar-x">
-				<div className="scroll-bar-thumb scroll-bar-thumb-x" {...useDrag(scrollbarXDrag as Handler<'drag'>)()}/>
+				<div className="scroll-bar-thumb scroll-bar-thumb-x" {...useGesture(useLocal({onDragStart: scrollbarDragStart,onDrag: scrollbarXDrag}))()}/>
 			</div>
 			<div className="scroll-bar scroll-bar-y">
-				<div className="scroll-bar-thumb scroll-bar-thumb-y" {...useDrag(scrollbarYDrag as Handler<'drag'>)()}/>
+				<div className="scroll-bar-thumb scroll-bar-thumb-y" {...useGesture(useLocal({onDragStart: scrollbarDragStart,onDrag: scrollbarYDrag}))()}/>
 			</div>
 		</div>
 	)
@@ -74,41 +78,46 @@ const scrollYOptions={top: 0,behavior: 'instant'}
 
 // High-frequency function
 globalAutoResizeObserver.addHandler('scrollViewportResize',function(entry:ResizeObserverEntry){
-	const scrollViewport=entry.target as HTMLElement
-	const scrollContentWrapper=scrollViewport.children[0] as HTMLElement
+	const scrollViewport=entry.target
 	const {style}=scrollViewport.parentElement! // scrollContainer.style
 	style.setProperty("--clientWidth",String(scrollViewport.clientWidth))
 	style.setProperty("--clientHeight",String(scrollViewport.clientHeight))
-	style.setProperty("--scrollWidth",String(scrollContentWrapper.offsetWidth))
-	style.setProperty("--scrollHeight",String(scrollContentWrapper.offsetHeight))
+	style.setProperty("--scrollWidth",String(scrollViewport.scrollWidth))
+	style.setProperty("--scrollHeight",String(scrollViewport.scrollHeight))
 })
 
 // High-frequency function
 globalAutoResizeObserver.addHandler('scrollContentWrapperResize',function(entry:ResizeObserverEntry){
-	const scrollContentWrapper=entry.target as HTMLElement
-	const {style}=scrollContentWrapper.parentElement!.parentElement! // scrollContainer.style
-	style.setProperty("--scrollWidth",String(scrollContentWrapper.offsetWidth))
-	style.setProperty("--scrollHeight",String(scrollContentWrapper.offsetHeight))
+	const scrollViewport=entry.target.parentElement!
+	const {style}=scrollViewport.parentElement! // scrollContainer.style
+	style.setProperty("--scrollWidth",String(scrollViewport.scrollWidth))
+	style.setProperty("--scrollHeight",String(scrollViewport.scrollHeight))
 })
+
+function scrollbarDragStart({target}:any){
+	const scrollViewport=target.parentElement.parentElement.children[0] as ScrollElement
+	scrollViewport.smooth=scrollViewport.parentElement!.classList.contains('smooth-scroll')
+	scrollViewport.duration=+getComputedStyle(scrollViewport).getPropertyValue('--smoothScrollDuration')
+}
 
 // High-frequency function
 function scrollbarXDrag({delta,target}:any){
 	const scrollViewport=target.parentElement.parentElement.children[0] as ScrollElement
-	scrollViewport.animatingX=false // Stop smooth scroll
-	scrollViewport.deltaX=0         // Stop smooth scroll
-	scrollViewport.scrollLeftTarget=scrollXOptions.left=delta[0]*scrollViewport.scrollWidth/scrollViewport.clientWidth
-	// @ts-expect-error TS2322
-	scrollViewport.scrollBy(scrollXOptions)
+	scrollXOptions.left=delta[0]*scrollViewport.scrollWidth/scrollViewport.clientWidth
+	scrollViewport.smooth?
+		smoothScrollXTo(scrollViewport,scrollXOptions.left):
+		// @ts-expect-error TS2322
+		scrollViewport.scrollBy(scrollXOptions)
 }
 
 // High-frequency function
 function scrollbarYDrag({delta,target}:any){
 	const scrollViewport=target.parentElement.parentElement.children[0] as ScrollElement
-	scrollViewport.animatingY=false // Stop smooth scroll
-	scrollViewport.deltaY=0         // Stop smooth scroll
-	scrollViewport.scrollTopTarget=scrollYOptions.top=delta[1]*scrollViewport.scrollHeight/scrollViewport.clientHeight
-	// @ts-expect-error TS2322
-	scrollViewport.scrollBy(scrollYOptions)
+	scrollYOptions.top=delta[1]*scrollViewport.scrollHeight/scrollViewport.clientHeight
+	scrollViewport.smooth?
+		smoothScrollYTo(scrollViewport,scrollYOptions.top):
+		// @ts-expect-error TS2322
+		scrollViewport.scrollBy(scrollYOptions)
 }
 
 // High-frequency function
@@ -123,6 +132,7 @@ function scroll(e:React.UIEvent<HTMLElement>){
 function wheelInit(scrollViewport:ScrollElement){
 	scrollViewport.scrollTopTarget=scrollViewport.scrollTop
 	scrollViewport.scrollLeftTarget=scrollViewport.scrollLeft
+	scrollViewport.smooth=scrollViewport.parentElement!.classList.contains('smooth-scroll')
 	scrollViewport.wheelXTimestamp=scrollViewport.wheelYTimestamp=Date.now()
 	scrollViewport.deltaX=scrollViewport.deltaY=0
 	scrollViewport.animatingX=scrollViewport.animatingY=false
@@ -153,18 +163,20 @@ function wheel(e:React.WheelEvent<HTMLElement>){
 	}
 
 	// Smooth scrolling
+	scrollViewport.smooth=smooth
 	if(smooth){
 		e.preventDefault()
-		scrollX && smoothScrollXStart(scrollViewport,deltaX)
-		scrollY && smoothScrollYStart(scrollViewport,deltaY)
+		scrollViewport.duration=+getComputedStyle(scrollViewport).getPropertyValue('--smoothScrollDuration')
+		scrollX && smoothScrollXTo(scrollViewport,deltaX)
+		scrollY && smoothScrollYTo(scrollViewport,deltaY)
 	}
 }
 
-function smoothScrollXStart(e:ScrollElement,deltaX:number){
+export function smoothScrollXTo(e:ScrollElement,deltaX:number,duration:number=e.duration){
 	if(!deltaX) return // Prevents no scroll situations
 	e.scrollLeftTarget=clamp(e.scrollLeftTarget+deltaX,0,e.scrollWidth-e.clientWidth)
 	e.deltaX=e.scrollLeftTarget-e.scrollLeft
-	e.smoothScrollXBase=getBase(e.deltaX,+getComputedStyle(e).getPropertyValue('--smoothScrollDuration'))
+	e.smoothScrollXBase=getBase(e.deltaX,duration)
 	if(!e.animatingX){ // Prevents multiple animation calls
 		e.animatingX=true
 		e.wheelXTimestamp=Date.now()
@@ -172,16 +184,28 @@ function smoothScrollXStart(e:ScrollElement,deltaX:number){
 	}
 }
 
-function smoothScrollYStart(e:ScrollElement,deltaY:number){
+export function smoothScrollYTo(e:ScrollElement,deltaY:number,duration:number=e.duration){
 	if(!deltaY) return // Prevents no scroll situations
 	e.scrollTopTarget=clamp(e.scrollTopTarget+deltaY,0,e.scrollHeight-e.clientHeight)
 	e.deltaY=e.scrollTopTarget-e.scrollTop
-	e.smoothScrollYBase=getBase(e.deltaY,+getComputedStyle(e).getPropertyValue('--smoothScrollDuration'))
+	e.smoothScrollYBase=getBase(e.deltaY,duration)
 	if(!e.animatingY){ // Prevents multiple animation calls
 		e.animatingY=true
 		e.wheelYTimestamp=Date.now()
 		smoothScrollYStep(e)
 	}
+}
+
+export function smoothScrollXHalt(e:ScrollElement){
+	e.scrollLeftTarget=scrollXOptions.left
+	e.deltaX=0
+	e.animatingX=false
+}
+
+export function smoothScrollYHalt(e:ScrollElement){
+	e.scrollTopTarget=scrollYOptions.top
+	e.deltaY=0
+	e.animatingY=false
 }
 
 function getBase(delta:number,duration:number){ return Math.exp(Math.log(0.1/Math.abs(delta))/(60*duration)) }
