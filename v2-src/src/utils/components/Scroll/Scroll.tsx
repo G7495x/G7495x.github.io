@@ -1,36 +1,32 @@
 import React,{forwardRef,MutableRefObject,PropsWithoutRef,useRef} from 'react'
 import {clamp} from 'lodash'
 import {Handler,useDrag} from '@use-gesture/react'
-import {easing} from 'ts-easing'
 
 import './Scroll.scss'
 import useLocal from '../../hooks/useLocal'
 import useLifecycle from '../../hooks/useLifecycle'
 import globalAutoResizeObserver from '../../dom/globalAutoResizeObserver'
 
-// TODO: CSS easing?, step size
-// TODO: scroll animation acceleration
+// TODO: CSS step multiplier
 // TODO: scroll step acceleration
 // TODO: Smooth drag
 // TODO-FUTURE: memo() stackoverflow.com/questions/60669528/how-to-use-react-memo-with-a-component-contains-children
 
 export type ScrollElement=HTMLElement&{
-	scrollTopStart:number
-	deltaX:number
 	scrollTopTarget:number
-
-	scrollLeftStart:number
-	deltaY:number
 	scrollLeftTarget:number
 
-	wheelXDuration:number
-	wheelXEndTimestamp:number
+	deltaX:number
+	deltaY:number
 
-	wheelYDuration:number
-	wheelYEndTimestamp:number
+	wheelXTimestamp:number
+	wheelYTimestamp:number
 
-	animatingX?:boolean
-	animatingY?:boolean
+	smoothScrollXBase:number
+	smoothScrollYBase:number
+
+	animatingX:boolean
+	animatingY:boolean
 }
 
 export default forwardRef<any,PropsWithoutRef<any>>(function Scroll({
@@ -97,17 +93,21 @@ globalAutoResizeObserver.addHandler('scrollContentWrapperResize',function(entry:
 
 // High-frequency function
 function scrollbarXDrag({delta,target}:any){
-	const scrollViewport=target.parentElement.parentElement.children[0]
-	delete scrollViewport.animatingX // Stop smooth scroll
-	scrollXOptions.left=delta[0]*scrollViewport.scrollWidth/scrollViewport.clientWidth
+	const scrollViewport=target.parentElement.parentElement.children[0] as ScrollElement
+	scrollViewport.animatingX=false // Stop smooth scroll
+	scrollViewport.deltaX=0         // Stop smooth scroll
+	scrollViewport.scrollLeftTarget=scrollXOptions.left=delta[0]*scrollViewport.scrollWidth/scrollViewport.clientWidth
+	// @ts-expect-error TS2322
 	scrollViewport.scrollBy(scrollXOptions)
 }
 
 // High-frequency function
 function scrollbarYDrag({delta,target}:any){
-	const scrollViewport=target.parentElement.parentElement.children[0]
-	delete scrollViewport.animatingY // Stop smooth scroll
-	scrollYOptions.top=delta[1]*scrollViewport.scrollHeight/scrollViewport.clientHeight
+	const scrollViewport=target.parentElement.parentElement.children[0] as ScrollElement
+	scrollViewport.animatingY=false // Stop smooth scroll
+	scrollViewport.deltaY=0         // Stop smooth scroll
+	scrollViewport.scrollTopTarget=scrollYOptions.top=delta[1]*scrollViewport.scrollHeight/scrollViewport.clientHeight
+	// @ts-expect-error TS2322
 	scrollViewport.scrollBy(scrollYOptions)
 }
 
@@ -121,14 +121,11 @@ function scroll(e:React.UIEvent<HTMLElement>){
 }
 
 function wheelInit(scrollViewport:ScrollElement){
-	scrollViewport.scrollTopStart=scrollViewport.scrollTopTarget=scrollViewport.scrollTop
-	scrollViewport.scrollLeftStart=scrollViewport.scrollLeftTarget=scrollViewport.scrollLeft
-
-	scrollViewport.deltaX=0
-	scrollViewport.deltaY=0
-
-	scrollViewport.wheelXDuration=scrollViewport.wheelYDuration=+getComputedStyle(scrollViewport).getPropertyValue('--smoothScrollDuration')*1000
-	scrollViewport.wheelXEndTimestamp=scrollViewport.wheelYEndTimestamp=Date.now()
+	scrollViewport.scrollTopTarget=scrollViewport.scrollTop
+	scrollViewport.scrollLeftTarget=scrollViewport.scrollLeft
+	scrollViewport.wheelXTimestamp=scrollViewport.wheelYTimestamp=Date.now()
+	scrollViewport.deltaX=scrollViewport.deltaY=0
+	scrollViewport.animatingX=scrollViewport.animatingY=false
 }
 
 function wheel(e:React.WheelEvent<HTMLElement>){
@@ -140,7 +137,7 @@ function wheel(e:React.WheelEvent<HTMLElement>){
 	const scrollY=classList.contains('scroll-y')
 	const smooth=classList.contains('smooth-scroll')
 	
-	const {clientWidth,clientHeight,scrollWidth,scrollHeight}=scrollViewport
+	const {clientWidth,scrollWidth}=scrollViewport
 	
 	// Horizontal scrolling support for mouse wheel
 	if(scrollX && !scrollY && deltaX===0){
@@ -158,61 +155,57 @@ function wheel(e:React.WheelEvent<HTMLElement>){
 	// Smooth scrolling
 	if(smooth){
 		e.preventDefault()
-		if(scrollX && deltaX){
-			scrollViewport.scrollLeftStart=scrollViewport.scrollLeft
-			scrollViewport.scrollLeftTarget=clamp(scrollViewport.scrollLeftTarget+deltaX,0,scrollWidth-clientWidth)
-			scrollViewport.deltaX=scrollViewport.scrollLeftTarget-scrollViewport.scrollLeftStart
-
-			if(scrollViewport.deltaX){ // Prevents no scroll situations & multiple animation calls
-				scrollViewport.wheelXDuration=+getComputedStyle(scrollViewport).getPropertyValue('--smoothScrollDuration')*1000
-				scrollViewport.wheelXEndTimestamp=scrollViewport.wheelXDuration+Date.now()
-				if(!scrollViewport.animatingX){
-					scrollViewport.animatingX=true // Start animation loop
-					smoothScrollXStep(scrollViewport)
-				}
-			}
-		}
-		if(scrollY && deltaY){
-			scrollViewport.scrollTopStart=scrollViewport.scrollTop
-			scrollViewport.scrollTopTarget=clamp(scrollViewport.scrollTopTarget+deltaY,0,scrollHeight-clientHeight)
-			scrollViewport.deltaY=scrollViewport.scrollTopTarget-scrollViewport.scrollTopStart
-
-			if(scrollViewport.deltaY){ // Prevents no scroll situations & multiple animation calls
-				scrollViewport.wheelYDuration=+getComputedStyle(scrollViewport).getPropertyValue('--smoothScrollDuration')*1000
-				scrollViewport.wheelYEndTimestamp=scrollViewport.wheelYDuration+Date.now()
-				if(!scrollViewport.animatingY){
-					scrollViewport.animatingY=true // Start animation loop
-					smoothScrollYStep(scrollViewport)
-				}
-			}
-		}
+		scrollX && smoothScrollXStart(scrollViewport,deltaX)
+		scrollY && smoothScrollYStart(scrollViewport,deltaY)
 	}
 }
+
+function smoothScrollXStart(e:ScrollElement,deltaX:number){
+	if(!deltaX) return // Prevents no scroll situations
+	e.scrollLeftTarget=clamp(e.scrollLeftTarget+deltaX,0,e.scrollWidth-e.clientWidth)
+	e.deltaX=e.scrollLeftTarget-e.scrollLeft
+	e.smoothScrollXBase=getBase(e.deltaX,+getComputedStyle(e).getPropertyValue('--smoothScrollDuration'))
+	if(!e.animatingX){ // Prevents multiple animation calls
+		e.animatingX=true
+		e.wheelXTimestamp=Date.now()
+		smoothScrollXStep(e)
+	}
+}
+
+function smoothScrollYStart(e:ScrollElement,deltaY:number){
+	if(!deltaY) return // Prevents no scroll situations
+	e.scrollTopTarget=clamp(e.scrollTopTarget+deltaY,0,e.scrollHeight-e.clientHeight)
+	e.deltaY=e.scrollTopTarget-e.scrollTop
+	e.smoothScrollYBase=getBase(e.deltaY,+getComputedStyle(e).getPropertyValue('--smoothScrollDuration'))
+	if(!e.animatingY){ // Prevents multiple animation calls
+		e.animatingY=true
+		e.wheelYTimestamp=Date.now()
+		smoothScrollYStep(e)
+	}
+}
+
+function getBase(delta:number,duration:number){ return Math.exp(Math.log(0.1/Math.abs(delta))/(60*duration)) }
 
 // High-frequency function
 function smoothScrollXStep(e:ScrollElement){
 	if(!e.animatingX) return
-	let phase=1-clamp((e.wheelXEndTimestamp-Date.now())/e.wheelXDuration,0,1)
-	phase=easing.outQuart(phase)
-	e.scrollTo({
-		// @ts-expect-error TS2322
-		behavior: 'instant',
-		left: e.scrollLeftStart+phase*e.deltaX,
-	})
-	if(phase<1) window.requestAnimationFrame(()=>smoothScrollXStep(e))
-	else delete e.animatingX
+	e.deltaX*=Math.pow(e.smoothScrollXBase,(Date.now()-e.wheelXTimestamp)/(1000/60))
+	e.wheelXTimestamp=Date.now()
+	scrollXOptions.left=e.scrollLeftTarget-e.deltaX
+	// @ts-expect-error TS2322
+	e.scrollTo(scrollXOptions)
+	if(Math.abs(e.deltaX)>.1) requestAnimationFrame(()=>smoothScrollXStep(e))
+	else e.animatingX=false
 }
 
 // High-frequency function
 function smoothScrollYStep(e:ScrollElement){
 	if(!e.animatingY) return
-	let phase=1-clamp((e.wheelYEndTimestamp-Date.now())/e.wheelYDuration,0,1)
-	phase=easing.outQuart(phase)
-	e.scrollTo({
-		// @ts-expect-error TS2322
-		behavior: 'instant',
-		top: e.scrollTopStart+phase*e.deltaY,
-	})
-	if(phase<1) window.requestAnimationFrame(()=>smoothScrollYStep(e))
-	else delete e.animatingY
+	e.deltaY*=Math.pow(e.smoothScrollYBase,(Date.now()-e.wheelYTimestamp)/(1000/60))
+	e.wheelYTimestamp=Date.now()
+	scrollYOptions.top=e.scrollTopTarget-e.deltaY
+	// @ts-expect-error TS2322
+	e.scrollTo(scrollYOptions)
+	if(Math.abs(e.deltaY)>.1) requestAnimationFrame(()=>smoothScrollYStep(e))
+	else e.animatingY=false
 }

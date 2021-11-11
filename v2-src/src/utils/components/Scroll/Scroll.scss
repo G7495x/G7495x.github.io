@@ -15,7 +15,7 @@
 // Container Styles -----------------------------------------------------------
 
 .scroll-container{
-	--smoothScrollDuration: 1.5;
+	--smoothScrollDuration: 2;
 
 	--scrollRight: calc(var(--scrollWidth) - var(--scrollLeft) - var(--clientWidth));
 	--scrollBottom: calc(var(--scrollHeight) - var(--scrollTop) - var(--clientHeight));
@@ -97,8 +97,9 @@
 }
 
 .scroll-bar-thumb{
+	min-width: var(--scrollBarThickness);
+	min-height: var(--scrollBarThickness);
 	border-radius: 1000px;
-	padding: calc(var(--scrollBarThickness) / 2);
 	touch-action: none; // @use-gesture/react.useDrag
 	transition: transform .05s;
 }
@@ -116,7 +117,7 @@
 // Color Styles ---------------------------------------------------------------
 
 .scroll-bar-thumb{
+	border: .5px solid rgba(white,.25);
 	background-color: rgba(black,.75);
-	box-shadow: inset 0 0 0 .5px rgba(white,.25);
 }
 .scroll-container:not(:hover)>.scroll-bar{ opacity: .5 }
