@@ -26,17 +26,8 @@ if(!window.globalAutoResizeObserver){ // To prevent multiple initializations
 
 	// Global ResizeObserver. Runs the ResizeHandlers from 'data-onresize' attribute (space separated).
 	window.globalAutoResizeObserver=new ResizeObserver(entries=>{
-		for(let entry of entries){
-			const target=entry.target as HTMLElement
-			const {style}=target
-			style.setProperty('--contentWidth',String(entry.contentRect.width))
-			style.setProperty('--contentHeight',String(entry.contentRect.height))
-			style.setProperty('--clientWidth',String(target.clientWidth))
-			style.setProperty('--clientHeight',String(target.clientHeight))
-			style.setProperty('--offsetWidth',String(target.offsetWidth))
-			style.setProperty('--offsetHeight',String(target.offsetHeight))
-			target.dataset['onresize']?.split(' ').forEach(resizeHandlerName=>window.globalAutoResizeObserver.handlers[resizeHandlerName]?.(entry))
-		}
+		for(let entry of entries)
+			(entry.target as HTMLElement).dataset['onresize']?.split(/ +/).forEach(resizeHandlerName=>window.globalAutoResizeObserver.handlers[resizeHandlerName]?.(entry))
 	}) as GlobalAutoResizeObserver
 
 	// Maintains a map of tags:string -> ResizeHandlers. So a ResizeHandler can be accessed via tag.
@@ -91,8 +82,19 @@ if(!window.globalAutoResizeObserver){ // To prevent multiple initializations
 		childList: true,
 	})
 
+	window.globalAutoResizeObserver.addHandler('default',defaultResizeHandler)
 }
 
+export function defaultResizeHandler(entry:ResizeObserverEntry){
+	const target=entry.target as HTMLElement
+	const {style}=target
+	style.setProperty('--contentWidth',String(entry.contentRect.width))
+	style.setProperty('--contentHeight',String(entry.contentRect.height))
+	style.setProperty('--clientWidth',String(target.clientWidth))
+	style.setProperty('--clientHeight',String(target.clientHeight))
+	style.setProperty('--offsetWidth',String(target.offsetWidth))
+	style.setProperty('--offsetHeight',String(target.offsetHeight))
+}
 
 // Exports --------------------------------------------------------------------
 

@@ -1,4 +1,4 @@
-import React,{forwardRef,MutableRefObject,PropsWithoutRef,useRef} from 'react'
+import React,{forwardRef,memo,MutableRefObject,PropsWithoutRef,useRef} from 'react'
 import {clamp} from 'lodash'
 import {useGesture} from '@use-gesture/react'
 
@@ -7,18 +7,16 @@ import useLocal from '../../hooks/useLocal'
 import useLifecycle from '../../hooks/useLifecycle'
 import globalAutoResizeObserver from '../../dom/globalAutoResizeObserver'
 
-// TODO: speed & accl css variables
-// TODO: CSS step multiplier
+// TODO: CSS wheel step multiplier
 // TODO: scroll step acceleration?
 // TODO-FUTURE: Scroll snapping support
-// TODO-FUTURE: memo() stackoverflow.com/questions/60669528/how-to-use-react-memo-with-a-component-contains-children
 
 export type ScrollElement=HTMLElement&{
 	scrollTopTarget:number
 	scrollLeftTarget:number
 
-	smooth:boolean // used in smoothScroll (default parameter). Updated onWheel and onScrollbarDrag
-	duration:number // used in smoothScroll (default parameter). Updated onWheel and onScrollbarDrag
+	smooth:boolean // Used in smoothScroll. Updated onWheel and onScrollbarDrag
+	duration:number // Used in smoothScroll (default parameter). Updated onWheel and onScrollbarDrag
 
 	deltaX:number // Used only in smoothScroll
 	deltaY:number // Used only in smoothScroll
@@ -26,18 +24,20 @@ export type ScrollElement=HTMLElement&{
 	wheelXTimestamp:number // Used in smoothScroll
 	wheelYTimestamp:number // Used in smoothScroll
 
-	smoothScrollXBase:number // Used in smoothScroll (Exponential ease base value)
-	smoothScrollYBase:number // Used in smoothScroll (Exponential ease base value)
+	smoothScrollXDecayFactor:number // Used in smoothScroll (Exponential ease DecayFactor value)
+	smoothScrollYDecayFactor:number // Used in smoothScroll (Exponential ease DecayFactor value)
 
 	animatingX:boolean // Indicates if smoothScroll animation loop is active
 	animatingY:boolean // Indicates if smoothScroll animation loop is active
 }
 
-export default forwardRef<any,PropsWithoutRef<any>>(function Scroll({
+export default memo(forwardRef<any,PropsWithoutRef<any>>(function Scroll({
 	className,
 	children,
 	onScroll,
 	onWheel,
+	addContentWrapper=true,
+	viewportProps={},
 	...props},
 	ref,
 ){
@@ -46,10 +46,13 @@ export default forwardRef<any,PropsWithoutRef<any>>(function Scroll({
 
 	const local=useLocal()
 	useLifecycle({componentDidMount})
+
+	viewportProps.className='scroll-viewport '+(viewportProps.className??'')
+	viewportProps['data-onresize']='scrollViewportResize '+(viewportProps['data-onresize']??'')
 	return (
 		<div {...props} className={'scroll-container '+(className??'')} {...{ref}}>
-			<div className="scroll-viewport" {...{onScroll,onWheel}} data-onresize="scrollViewportResize">
-				<div className="scroll-content-wrapper" data-onresize="scrollContentWrapperResize">{children}</div>
+			<div {...viewportProps} {...{onScroll,onWheel}}>
+				{addContentWrapper?<div className="scroll-content-wrapper" data-onresize="scrollContentWrapperResize">{children}</div>:children}
 			</div>
 			<div className="scroll-bar scroll-bar-x">
 				<div className="scroll-bar-thumb scroll-bar-thumb-x" {...useGesture(useLocal({onDragStart: scrollbarDragStart,onDrag: scrollbarXDrag}))()}/>
@@ -71,7 +74,7 @@ export default forwardRef<any,PropsWithoutRef<any>>(function Scroll({
 		wheelInit(local.scrollViewport)
 		local.scrollViewport.dispatchEvent(new CustomEvent('scroll')) // init
 	}
-})
+}))
 
 const scrollXOptions={left: 0,behavior: 'instant'}
 const scrollYOptions={top: 0,behavior: 'instant'}
@@ -80,18 +83,18 @@ const scrollYOptions={top: 0,behavior: 'instant'}
 globalAutoResizeObserver.addHandler('scrollViewportResize',function(entry:ResizeObserverEntry){
 	const scrollViewport=entry.target
 	const {style}=scrollViewport.parentElement! // scrollContainer.style
-	style.setProperty("--clientWidth",String(scrollViewport.clientWidth))
-	style.setProperty("--clientHeight",String(scrollViewport.clientHeight))
-	style.setProperty("--scrollWidth",String(scrollViewport.scrollWidth))
-	style.setProperty("--scrollHeight",String(scrollViewport.scrollHeight))
+	style.setProperty('--scrollWidth',String(scrollViewport.scrollWidth))
+	style.setProperty('--scrollHeight',String(scrollViewport.scrollHeight))
+	style.setProperty('--scrollClientWidth',String(scrollViewport.clientWidth))
+	style.setProperty('--scrollClientHeight',String(scrollViewport.clientHeight))
 })
 
 // High-frequency function
 globalAutoResizeObserver.addHandler('scrollContentWrapperResize',function(entry:ResizeObserverEntry){
 	const scrollViewport=entry.target.parentElement!
 	const {style}=scrollViewport.parentElement! // scrollContainer.style
-	style.setProperty("--scrollWidth",String(scrollViewport.scrollWidth))
-	style.setProperty("--scrollHeight",String(scrollViewport.scrollHeight))
+	style.setProperty('--scrollWidth',String(scrollViewport.scrollWidth))
+	style.setProperty('--scrollHeight',String(scrollViewport.scrollHeight))
 })
 
 function scrollbarDragStart({target}:any){
@@ -122,11 +125,33 @@ function scrollbarYDrag({delta,target}:any){
 
 // High-frequency function
 function scroll(e:React.UIEvent<HTMLElement>){
-	const scrollViewport=e.target as HTMLElement
+	const scrollViewport=e.target as ScrollElement
 	const {style}=scrollViewport.parentElement! // scrollContainer.style
 	const {scrollTop,scrollLeft}=scrollViewport
-	style.setProperty("--scrollTop",String(scrollTop))
-	style.setProperty("--scrollLeft",String(scrollLeft))
+
+	const yVelocity=scrollTop-+style.getPropertyValue('--scrollTop')
+	style.setProperty('--scrollYVelocity',String(yVelocity))
+	style.setProperty('--scrollYSpeed',String(Math.abs(yVelocity)))
+
+	const xVelocity=scrollLeft-+style.getPropertyValue('--scrollLeft')
+	style.setProperty('--scrollXVelocity',String(xVelocity))
+	style.setProperty('--scrollXSpeed',String(Math.abs(xVelocity)))
+
+	style.setProperty('--scrollTop',String(scrollTop))
+	style.setProperty('--scrollLeft',String(scrollLeft))
+
+	setTimeout(()=>scrollEnd(scrollViewport,style,scrollTop,scrollLeft),300 /* Experimentally determined. Boundary scenario: 60hz, devicePixelRatio=1 */)
+}
+
+function scrollEnd(e:HTMLElement,style:CSSStyleDeclaration,scrollTop:number,scrollLeft:number){
+	if(e.scrollTop===scrollTop){
+		style.setProperty('--scrollYVelocity','0')
+		style.setProperty('--scrollYSpeed','0')
+	}
+	if(e.scrollLeft===scrollLeft){
+		style.setProperty('--scrollXVelocity','0')
+		style.setProperty('--scrollXSpeed','0')
+	}
 }
 
 function wheelInit(scrollViewport:ScrollElement){
@@ -172,11 +197,13 @@ function wheel(e:React.WheelEvent<HTMLElement>){
 	}
 }
 
+const deltaTarget=.49 // Exponential decay final value
+
 export function smoothScrollXTo(e:ScrollElement,deltaX:number,duration:number=e.duration){
 	if(!deltaX) return // Prevents no scroll situations
 	e.scrollLeftTarget=clamp(e.scrollLeftTarget+deltaX,0,e.scrollWidth-e.clientWidth)
 	e.deltaX=e.scrollLeftTarget-e.scrollLeft
-	e.smoothScrollXBase=getBase(e.deltaX,duration)
+	e.smoothScrollXDecayFactor=getDecayFactor(e.deltaX,duration)
 	if(!e.animatingX){ // Prevents multiple animation calls
 		e.animatingX=true
 		e.wheelXTimestamp=Date.now()
@@ -188,7 +215,7 @@ export function smoothScrollYTo(e:ScrollElement,deltaY:number,duration:number=e.
 	if(!deltaY) return // Prevents no scroll situations
 	e.scrollTopTarget=clamp(e.scrollTopTarget+deltaY,0,e.scrollHeight-e.clientHeight)
 	e.deltaY=e.scrollTopTarget-e.scrollTop
-	e.smoothScrollYBase=getBase(e.deltaY,duration)
+	e.smoothScrollYDecayFactor=getDecayFactor(e.deltaY,duration)
 	if(!e.animatingY){ // Prevents multiple animation calls
 		e.animatingY=true
 		e.wheelYTimestamp=Date.now()
@@ -208,28 +235,34 @@ export function smoothScrollYHalt(e:ScrollElement){
 	e.animatingY=false
 }
 
-function getBase(delta:number,duration:number){ return Math.exp(Math.log(0.1/Math.abs(delta))/(60*duration)) }
+// Returns decay factor from delta and duration.
+// The decay factor is for 60fps.
+// For fps variation correction, Math.pow(decayFactor,frameDelayInSeconds/(1/60))
+// TODO: .49 is the delta cutoff in our animation
+function getDecayFactor(delta:number,duration:number,deltaTarget:number=.49){ return Math.exp(Math.log(deltaTarget/Math.abs(delta))/(60*duration)) }
 
+// Do not call directly. Called within smoothScrollXTo only.
 // High-frequency function
 function smoothScrollXStep(e:ScrollElement){
 	if(!e.animatingX) return
-	e.deltaX*=Math.pow(e.smoothScrollXBase,(Date.now()-e.wheelXTimestamp)/(1000/60))
+	e.deltaX*=Math.pow(e.smoothScrollXDecayFactor,(Date.now()-e.wheelXTimestamp)/(1000/60)) // deltaX*=smoothScrollXDecayFactor with fps correction
 	e.wheelXTimestamp=Date.now()
-	scrollXOptions.left=e.scrollLeftTarget-e.deltaX
+	scrollXOptions.left=Math.round(e.scrollLeftTarget-e.deltaX) // TODO-FUTURE: Browser fix for fractional scroll values
 	// @ts-expect-error TS2322
 	e.scrollTo(scrollXOptions)
-	if(Math.abs(e.deltaX)>.1) requestAnimationFrame(()=>smoothScrollXStep(e))
+	if(Math.abs(e.deltaX)>deltaTarget) requestAnimationFrame(()=>smoothScrollXStep(e))
 	else e.animatingX=false
 }
 
+// Do not call directly. Called within smoothScrollYTo only.
 // High-frequency function
 function smoothScrollYStep(e:ScrollElement){
 	if(!e.animatingY) return
-	e.deltaY*=Math.pow(e.smoothScrollYBase,(Date.now()-e.wheelYTimestamp)/(1000/60))
+	e.deltaY*=Math.pow(e.smoothScrollYDecayFactor,(Date.now()-e.wheelYTimestamp)/(1000/60)) // deltaY*=smoothScrollYDecayFactor with fps correction
 	e.wheelYTimestamp=Date.now()
-	scrollYOptions.top=e.scrollTopTarget-e.deltaY
+	scrollYOptions.top=Math.round(e.scrollTopTarget-e.deltaY) // TODO-FUTURE: Browser fix for fractional scroll values
 	// @ts-expect-error TS2322
 	e.scrollTo(scrollYOptions)
-	if(Math.abs(e.deltaY)>.1) requestAnimationFrame(()=>smoothScrollYStep(e))
+	if(Math.abs(e.deltaY)>deltaTarget) requestAnimationFrame(()=>smoothScrollYStep(e))
 	else e.animatingY=false
 }

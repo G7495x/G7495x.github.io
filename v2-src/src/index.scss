@@ -16,19 +16,22 @@
 }
 
 body{
-	font-family: FontAwesome,'Bai Jamjuree',sans-serif;
+	overflow: hidden;
+	font-family: 'Sony Sketch EF',FontAwesome,'Bai Jamjuree',sans-serif;
 	font-weight: 500;
 
-	@include bg-color($gray-0950);
-	@include text-color($gray-0150);
-	&.dark-mode{
-		@include bg-color($gray-0100);
-		@include text-color($gray-0750);
-	}
+	@include bg-color($gray-0000);
+	@include text-color($gray-1000);
+	//&.dark-mode{
+	//	@include bg-color($gray-0100);
+	//	@include text-color($gray-0750);
+	//}
 }
 
 body,
 #root{ display: contents }
+
+.parallax{ transform-style: preserve-3d }
 
 //@include button-inputs{ @include button-style }
 //

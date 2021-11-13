@@ -3,8 +3,18 @@
   <component name="ChangeListManager">
     <list default="true" id="113f84ce-aa07-49a4-923a-2ff601ae6e3a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/App/App.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/App/App.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/App/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/App/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/components/Scroll/Scroll.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/components/Scroll/Scroll.scss" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/utils/components/Scroll/Scroll.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/components/Scroll/Scroll.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/vite.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/dom/globalAutoResizeObserver.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/dom/globalAutoResizeObserver.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/hooks/useResize.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/hooks/useResize.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../v2/assets/favicon-196x196.5087dbb2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../v2/assets/index.2d293531.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../v2/assets/index.495926b3.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../v2/assets/vendor.eb60e109.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../v2/index.html" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,7 +67,7 @@
       <updated>1636357957647</updated>
       <workItem from="1636357959978" duration="63751000" />
       <workItem from="1636606509277" duration="2086000" />
-      <workItem from="1636618374609" duration="7058000" />
+      <workItem from="1636618374609" duration="34255000" />
     </task>
     <servers />
   </component>

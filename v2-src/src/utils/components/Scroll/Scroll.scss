@@ -17,12 +17,12 @@
 .scroll-container{
 	--smoothScrollDuration: 2;
 
-	--scrollRight: calc(var(--scrollWidth) - var(--scrollLeft) - var(--clientWidth));
-	--scrollBottom: calc(var(--scrollHeight) - var(--scrollTop) - var(--clientHeight));
+	--scrollRight: calc(var(--scrollWidth) - var(--scrollLeft) - var(--scrollClientWidth));
+	--scrollBottom: calc(var(--scrollHeight) - var(--scrollTop) - var(--scrollClientHeight));
 	--scrollXPhase: 0; // Handling 0/0 case
 	--scrollYPhase: 0; // Handling 0/0 case
-	--scrollXPhase: calc(var(--scrollLeft) / (var(--scrollWidth) - var(--clientWidth)));
-	--scrollYPhase: calc(var(--scrollTop) / (var(--scrollHeight) - var(--clientHeight)));
+	--scrollXPhase: calc(var(--scrollLeft) / (var(--scrollWidth) - var(--scrollClientWidth)));
+	--scrollYPhase: calc(var(--scrollTop) / (var(--scrollHeight) - var(--scrollClientHeight)));
 
 	position: relative;
 	overflow: hidden;
@@ -35,10 +35,12 @@
 		>.scroll-bar-y{ display: block }
 		>.scroll-viewport{ overflow-y: scroll }
 	}
-	&.smooth-scroll>.scroll-viewport{ scroll-behavior: initial }
+	&.smooth-scroll>.scroll-viewport{ scroll-behavior: initial !important }
 }
 
 .scroll-viewport{
+	perspective: 1px;
+	perspective-origin: center;
 	width: 100%;
 	height: 100%;
 	max-width: 100%;
@@ -55,6 +57,7 @@
 
 .scroll-viewport,
 .scroll-content-wrapper{
+	transform-style: preserve-3d;
 	margin: 0 !important;
 	border: none !important;
 	padding: 0 !important;
@@ -79,7 +82,7 @@
 
 	// Auto hide scrollbar if scrollWidth<=clientWidth
 	bottom: min(
-		calc((var(--scrollWidth) - var(--clientWidth)) * 1000px - 1000px), // scrollWidth<=clientWidth
+		calc((var(--scrollWidth) - var(--scrollClientWidth)) * 1000px - 1000px), // scrollWidth<=clientWidth
 		0px                                                                // scrollWidth>clientWidth
 	);
 }
@@ -91,7 +94,7 @@
 
 	// Auto hide scrollbar if scrollHeight<=clientHeight
 	right: min(
-		calc((var(--scrollHeight) - var(--clientHeight)) * 1000px - 1000px), // scrollHeight<=clientHeight
+		calc((var(--scrollHeight) - var(--scrollClientHeight)) * 1000px - 1000px), // scrollHeight<=clientHeight
 		0px                                                                  // scrollHeight>clientHeight
 	);
 }
@@ -105,13 +108,13 @@
 }
 
 .scroll-bar-thumb-x{
-	transform: translateX(calc((var(--scrollLeft) / var(--clientWidth)) * 100%)); // scrollLeft / clientWidth * 100%
-	width: calc((var(--clientWidth) / var(--scrollWidth)) * 100%); // clientWidth / scrollWidth * 100%
+	transform: translateX(calc((var(--scrollLeft) / var(--scrollClientWidth)) * 100%)); // scrollLeft / clientWidth * 100%
+	width: calc((var(--scrollClientWidth) / var(--scrollWidth)) * 100%); // clientWidth / scrollWidth * 100%
 }
 
 .scroll-bar-thumb-y{
-	transform: translateY(calc((var(--scrollTop) / var(--clientHeight)) * 100%)); // scrollTop / clientHeight * 100%
-	height: calc((var(--clientHeight) / var(--scrollHeight)) * 100%); // clientHeight / scrollHeight * 100%
+	transform: translateY(calc((var(--scrollTop) / var(--scrollClientHeight)) * 100%)); // scrollTop / clientHeight * 100%
+	height: calc((var(--scrollClientHeight) / var(--scrollHeight)) * 100%); // clientHeight / scrollHeight * 100%
 }
 
 // Color Styles ---------------------------------------------------------------
