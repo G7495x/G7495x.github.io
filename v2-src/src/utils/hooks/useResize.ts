@@ -10,7 +10,7 @@ import useLocal from './useLocal'
 // <div {...onResizeProps}>
 export default function useResize(onResize?:ResizeHandler,useDefaultResizeHandler:boolean=false){
 	const resizeHandlerName=useUuid()
-	usePreEffect([onResize],addResizeHandler)
+	usePreEffect(addResizeHandler,[onResize])
 	useLifecycle({componentWillUnmount})
 	return useLocal({'data-onresize': (useDefaultResizeHandler?'default ':'')+resizeHandlerName})
 

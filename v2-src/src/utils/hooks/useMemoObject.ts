@@ -5,9 +5,8 @@ import useLocal from './useLocal'
 /**
  * Returns a memoized object if passed object has same values from previous render (shallow compare).
  * Especially useful while sending props object to pure / memoized components.
- * `useMemoObjectDebug` prints changes.
  */
-function useMemoObject<Type extends Object>(obj:Type){
+export default function useMemoObject<Type extends Object>(obj:Type){
 	const oldObj=useLocal() as Type
 	const newObj=useLocal() as Type
 
@@ -18,33 +17,3 @@ function useMemoObject<Type extends Object>(obj:Type){
 	}
 	return changed?{...newObj}:newObj
 }
-
-/**
- * Returns a memoized object if passed object has same values from previous render (shallow compare).
- * Especially useful while sending props object to pure / memoized components.
- * `useMemoObjectDebug` prints changes.
- */
-export function useMemoObjectDebug<Type extends Object>(obj:Type){
-	const oldObj=useLocal() as Type
-	const newObj=useLocal() as Type
-
-	const changed=[]
-	const oldVals=[]
-	const newVals=[]
-	for(let i in obj){
-		newObj[i]=obj[i]
-		if(oldObj[i]!==obj[i]){
-			changed.push(i)
-			oldVals.push(oldObj[i])
-			newVals.push(obj[i])
-			oldObj[i]=obj[i]
-		}
-	}
-	if(changed.length){
-		console.log('useMemoObjectDebug: Changed',changed,oldVals,newVals)
-		return {...newObj}
-	}
-	return newObj
-}
-
-export default useMemoObject

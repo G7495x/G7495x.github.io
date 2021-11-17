@@ -1,7 +1,6 @@
 import React,{ComponentClass,createElement,FunctionComponent,memo,PropsWithChildren,useContext} from 'react'
 
 import './ScrollItem.scss'
-import useMemoObject from '../../hooks/useMemoObject'
 import {ScrollContext} from '../Scroll/Scroll'
 
 export interface ScrollItemProps extends PropsWithChildren<any>{
@@ -12,14 +11,15 @@ export interface ScrollItemProps extends PropsWithChildren<any>{
 export default memo(function ScrollItem({
 	type='div',
 	className,
+	'data-onresize':dataOnResize='',
 	...props
 }:ScrollItemProps){
 	const id=useContext(ScrollContext)
-	// @ts-ignore
-	return createElement(type,useMemoObject({
+	return createElement(type,{
 		...props,
-		'data-onresize':'default '+(props['data-onresize']??''),
+		// @ts-expect-error TS2769
 		className: 'scroll-item '+(className??''),
-		'data-scroll-id': id,
-	}))
+		'data-onresize': dataOnResize+' default',
+		'data-scroll-viewport-id': id,
+	})
 })
