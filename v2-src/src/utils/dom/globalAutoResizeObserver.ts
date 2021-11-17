@@ -5,12 +5,13 @@
 
 export type ResizeHandler=(entry:ResizeObserverEntry)=>any
 
-export type GlobalAutoResizeObserver=ResizeObserver&{
+export interface GlobalAutoResizeObserver extends ResizeObserver{
 	handlers: { [resizeHandlerName:string]: ResizeHandler } // Mutable object
 	addHandler: (resizeHandlerName:string,resizeHandler:ResizeHandler,overwrite?:boolean)=>any
 	removeHandler: (resizeHandlerName:string)=>any
 	mutationObserver: MutationObserver // Watches DOM for elements with `data-onresize` attribute to auto observe / unobserve
 	trigger: (target:HTMLElement)=>void
+	windowOnResize: ()=>void
 }
 
 declare global{
@@ -27,7 +28,11 @@ if(!window.globalAutoResizeObserver){ // To prevent multiple initializations
 	// Global ResizeObserver. Runs the ResizeHandlers from 'data-onresize' attribute (space separated).
 	window.globalAutoResizeObserver=new ResizeObserver(entries=>{
 		for(let entry of entries)
-			(entry.target as HTMLElement).dataset['onresize']?.split(/ +/).forEach(resizeHandlerName=>window.globalAutoResizeObserver.handlers[resizeHandlerName]?.(entry))
+			// (entry.target as HTMLElement).dataset['onresize']?.split(/ +/)
+			// 	.forEach(resizeHandlerName=>window.globalAutoResizeObserver.handlers[resizeHandlerName]?.(entry))
+			[...new Set( // removing duplicates
+				(entry.target as HTMLElement).dataset['onresize']?.split(/ +/)
+			)].forEach(resizeHandlerName=>window.globalAutoResizeObserver.handlers[resizeHandlerName]?.(entry))
 	}) as GlobalAutoResizeObserver
 
 	// Maintains a map of tags:string -> ResizeHandlers. So a ResizeHandler can be accessed via tag.
@@ -83,6 +88,10 @@ if(!window.globalAutoResizeObserver){ // To prevent multiple initializations
 	})
 
 	window.globalAutoResizeObserver.addHandler('default',defaultResizeHandler)
+
+	window.globalAutoResizeObserver.windowOnResize=windowOnResize
+	window.addEventListener('resize',windowOnResize)
+	windowOnResize()
 }
 
 export function defaultResizeHandler(entry:ResizeObserverEntry){
@@ -94,6 +103,15 @@ export function defaultResizeHandler(entry:ResizeObserverEntry){
 	style.setProperty('--clientHeight',String(target.clientHeight))
 	style.setProperty('--offsetWidth',String(target.offsetWidth))
 	style.setProperty('--offsetHeight',String(target.offsetHeight))
+}
+
+export function windowOnResize(){
+	const {style}=document.documentElement
+	style.setProperty('--innerWidth',String(window.innerWidth))
+	style.setProperty('--innerHeight',String(window.innerHeight))
+	style.setProperty('--outerWidth',String(window.outerWidth))
+	style.setProperty('--outerHeight',String(window.outerHeight))
+	style.setProperty('--pixelRatio',String(window.devicePixelRatio))
 }
 
 // Exports --------------------------------------------------------------------

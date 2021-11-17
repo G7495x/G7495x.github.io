@@ -2,24 +2,50 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="113f84ce-aa07-49a4-923a-2ff601ae6e3a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../assets/ne-arrow.afdesign" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../assets/right-arrow.afdesign" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../assets/stamp.afdesign" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/bg 2.afdesign" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/bg.afdesign" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/assets/imgs/240_F_223890701_mHoW6TfAsBRiRTuIWYdSQF4pSursBOfo.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/assets/imgs/360_F_220569193_DGGxZGTY8CtwzEjZhmcbjKb9MI17bBzf.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/assets/imgs/360_F_333787059_30nI9PI9cCySgulYRoNqMrAkuNTwadBT.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/assets/imgs/bg.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/assets/imgs/ne-arrow-o.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/assets/imgs/ne-arrow.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/assets/imgs/right-arrow.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/assets/imgs/stamp.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/Slide1/Slide1.scss" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/Slide1/Slide1.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/Slide2/Slide2.scss" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/Slide2/Slide2.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/utils/components/ScrollItem/ScrollItem.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/v2-src.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/v2-src.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/_animations.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/_animations.scss" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/App/App.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/App/App.scss" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/App/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/App/App.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/index.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.scss" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/utils/components/Scroll/Scroll.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/components/Scroll/Scroll.scss" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/utils/components/Scroll/Scroll.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/components/Scroll/Scroll.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/utils/dom/globalAutoResizeObserver.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/dom/globalAutoResizeObserver.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/hooks/useResize.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/hooks/useResize.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../v2/assets/favicon-196x196.5087dbb2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../v2/assets/index.2d293531.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../v2/assets/index.495926b3.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../v2/assets/vendor.eb60e109.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../v2/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="CSS File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -35,17 +61,24 @@
   <component name="MacroExpansionManager">
     <option name="directoryName" value="4mdkqyo4" />
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedIndex" value="1" />
+  </component>
   <component name="ProjectId" id="20cy1cm2k1SX1YcV6S3XpBkM61K" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../v2-src_" />
+    <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
     <property name="ts.external.directory.path" value="G:\Repositories\G7495x.github.io\v2-src\node_modules\typescript\lib" />
@@ -67,7 +100,11 @@
       <updated>1636357957647</updated>
       <workItem from="1636357959978" duration="63751000" />
       <workItem from="1636606509277" duration="2086000" />
-      <workItem from="1636618374609" duration="34255000" />
+      <workItem from="1636618374609" duration="59022000" />
+      <workItem from="1636976897902" duration="328000" />
+      <workItem from="1636977246767" duration="26708000" />
+      <workItem from="1637053770683" duration="7956000" />
+      <workItem from="1637077245860" duration="36124000" />
     </task>
     <servers />
   </component>

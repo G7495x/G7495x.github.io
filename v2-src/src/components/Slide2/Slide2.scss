@@ -1,0 +1,17 @@
+@import '../../_variables';
+
+#Slide2{
+	@include gap-x(30px);
+	width: calc(var(--scrollClientWidth) * 1px);
+	@include media-breakpoint-up(sm){
+		margin-left: -60px !important;
+		width: 360px;
+	}
+	overflow: hidden;
+	// backdrop-filter: blur(16px);
+	background-image: linear-gradient(to bottom,rgba(black,.175),rgba(black,.875));
+	//.ne-arrow-o{
+	//	transform: translateZ(.1px);
+	//}
+	.fa-envelope{ transform: scaleY(.9) }
+}

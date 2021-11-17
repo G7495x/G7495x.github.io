@@ -1,15 +1,13 @@
 @import '_variables';
-
-@include all-selector{
-}
+@import '_animations';
 
 :root{
-	--mutedAlpha: 0.6;
+	//--mutedAlpha: 0.6;
 	@include hsla-split($accent-0500,accent);
 
-	--pixelRatio: 1;
-	@media only screen and (-webkit-min-device-pixel-ratio: 2){ --pixelRatio: 2 }
-	@media only screen and (   min--moz-device-pixel-ratio: 2){ --pixelRatio: 2 }
+	// --pixelRatio: 1;
+	// @media only screen and (-webkit-min-device-pixel-ratio: 2){ --pixelRatio: 2 }
+	// @media only screen and (   min--moz-device-pixel-ratio: 2){ --pixelRatio: 2 }
 	--pixelSize: calc(1px / var(--pixelRatio));
 
 	position: fixed;
@@ -17,7 +15,8 @@
 
 body{
 	overflow: hidden;
-	font-family: 'Sony Sketch EF',FontAwesome,'Bai Jamjuree',sans-serif;
+	font-family: FontAwesome,'Bai Jamjuree','Segoe UI Symbol','Apple Symbols',sans-serif;
+	//font-family: FontAwesome,'Montserrat',sans-serif;
 	font-weight: 500;
 
 	@include bg-color($gray-0000);
@@ -31,13 +30,49 @@ body{
 body,
 #root{ display: contents }
 
-.parallax{ transform-style: preserve-3d }
+a{ color: inherit }
 
-//@include button-inputs{ @include button-style }
-//
-//@include outline-inputs{
-//	@include input-style;
-//	&::placeholder{ color: Hsla(var(--textHSL),var(--mutedAlpha)) }
-//}
+.vertical-text{
+	transform: rotateZ(180deg);
+	writing-mode: vertical-rl;
+	//text-orientation: mixed;
+}
 
-//.card{ @include card }
+hr{
+	height: auto;
+	border-top: 1px solid currentColor;
+}
+.vc{ border-left: 1px solid currentColor; }
+hr,.vc{ opacity: .1; }
+
+.vertical-divider{
+	width: 25px;
+	margin-left: 5px !important;
+}
+
+.dot{
+	width: 5px;
+	height: 10px;
+	border-radius: 5px;
+	background-color: currentColor;
+}
+
+.link{
+	@include f-center;
+	position: relative;
+	height: 40px;
+	border: 1px solid hsla(var(--textHSL),.1);
+	border-radius: 10px;
+	padding-left: 55px;
+	box-shadow: inset 40px 0 hsla(var(--textHSL),.1);
+	>.fa,.bi{
+		@include super-center;
+		@include text-muted;
+		//@include h7;
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		width: 40px;
+	}
+}

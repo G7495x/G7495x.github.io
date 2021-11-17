@@ -1,0 +1,22 @@
+
+.scroll-item{
+	--scrollItemPhaseX: calc(1 - clamp(
+		0,
+		(var(--scrollLeft) + var(--scrollClientWidth) - var(--scrollOffsetLeft)) /
+		(var(--scrollClientWidth) + var(--clientWidth)),
+		1
+	));
+	--scrollItemPhaseY: calc(1 - clamp(
+		0,
+		(var(--scrollTop) + var(--scrollClientHeight) - var(--scrollOffsetTop)) /
+		(var(--scrollClientHeight) + var(--clientHeight)),
+		1
+	));
+	// TODO: Phase offsets
+
+	// TODO: Trigger offsets
+	--scrollItemTriggerX: clamp(0,min(var(--scrollItemPhaseX),1 - var(--scrollItemPhaseX)) * 1000000,1);
+	--scrollItemTriggerY: clamp(0,min(var(--scrollItemPhaseY),1 - var(--scrollItemPhaseY)) * 1000000,1);
+	--scrollItemTriggerXInv: calc(1 - var(--scrollItemTriggerX));
+	--scrollItemTriggerYInv: calc(1 - var(--scrollItemTriggerY));
+}

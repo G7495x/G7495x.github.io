@@ -14,7 +14,7 @@
     "react-dom": "^17.0.2",
     "react-router-dom": "^5.3.0",
     "sass": "^1.43.4",
-    "supergrids.css": "^1.0.0-beta.6",
+    "supergrids.css": "^1.0.0-beta.7",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

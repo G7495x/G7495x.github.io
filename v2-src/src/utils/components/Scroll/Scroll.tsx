@@ -1,4 +1,4 @@
-import React,{forwardRef,memo,MutableRefObject,PropsWithoutRef,useRef} from 'react'
+import React,{createContext,forwardRef,memo,MutableRefObject,PropsWithoutRef,RefObject,useRef} from 'react'
 import {clamp} from 'lodash'
 import {useGesture} from '@use-gesture/react'
 
@@ -6,12 +6,20 @@ import './Scroll.scss'
 import useLocal from '../../hooks/useLocal'
 import useLifecycle from '../../hooks/useLifecycle'
 import globalAutoResizeObserver from '../../dom/globalAutoResizeObserver'
+import useUuid from '../../hooks/useUuid'
+import useMemoObject from '../../hooks/useMemoObject'
 
-// TODO: CSS wheel step multiplier
-// TODO: scroll step acceleration?
+// TODO: Remove scroll-content-wrapper, add scrollContentWrapperResize for children
+// TODO: ScrollItem intersection observer
+// TODO: ScrollItem Handle resizes
+// TODO: Fix smooth-wheel page-zoom issue
+// TODO: Fix smooth-wheel nested scroll issue
+// TODO-FUTURE: wheel css step multiplier
+// TODO-FUTURE: wheel css step acceleration
+// TODO-FUTURE: wheel css time dilation factor
 // TODO-FUTURE: Scroll snapping support
 
-export type ScrollElement=HTMLElement&{
+export interface ScrollElement extends HTMLElement{
 	scrollTopTarget:number
 	scrollLeftTarget:number
 
@@ -21,17 +29,26 @@ export type ScrollElement=HTMLElement&{
 	deltaX:number // Used only in smoothScroll
 	deltaY:number // Used only in smoothScroll
 
-	wheelXTimestamp:number // Used in smoothScroll
-	wheelYTimestamp:number // Used in smoothScroll
+	wheelXTimestamp:number // Used only in smoothScroll
+	wheelYTimestamp:number // Used only in smoothScroll
 
-	smoothScrollXDecayFactor:number // Used in smoothScroll (Exponential ease DecayFactor value)
-	smoothScrollYDecayFactor:number // Used in smoothScroll (Exponential ease DecayFactor value)
+	smoothScrollXDecayFactor:number // Used only in smoothScroll (Exponential ease function)
+	smoothScrollYDecayFactor:number // Used only in smoothScroll (Exponential ease function)
 
 	animatingX:boolean // Indicates if smoothScroll animation loop is active
 	animatingY:boolean // Indicates if smoothScroll animation loop is active
 }
 
-export default memo(forwardRef<any,PropsWithoutRef<any>>(function Scroll({
+export interface ScrollProps extends PropsWithoutRef<any>{
+	onScroll?:React.UIEventHandler<HTMLElement>
+	onWheel?:React.WheelEventHandler<HTMLElement>
+	addContentWrapper?:boolean
+	viewportProps?:PropsWithoutRef<any>
+}
+
+export const ScrollContext=createContext<string>('')
+
+export default memo(forwardRef<any,ScrollProps>(function Scroll({
 	className,
 	children,
 	onScroll,
@@ -49,22 +66,25 @@ export default memo(forwardRef<any,PropsWithoutRef<any>>(function Scroll({
 
 	viewportProps.className='scroll-viewport '+(viewportProps.className??'')
 	viewportProps['data-onresize']='scrollViewportResize '+(viewportProps['data-onresize']??'')
+	const id=useUuid()
 	return (
-		<div {...props} className={'scroll-container '+(className??'')} {...{ref}}>
-			<div {...viewportProps} {...{onScroll,onWheel}}>
-				{addContentWrapper?<div className="scroll-content-wrapper" data-onresize="scrollContentWrapperResize">{children}</div>:children}
+		<ScrollContext.Provider value={id}>
+			<div {...props} className={'scroll-container '+(className??'')} {...{ref}} data-scroll-id={id}>
+				<div {...useMemoObject(viewportProps)} {...{onScroll,onWheel}}>
+					{addContentWrapper?<div className="scroll-content-wrapper" data-onresize="scrollContentWrapperResize">{children}</div>:children}
+				</div>
+				<div className="scroll-bar scroll-bar-x">
+					<div className="scroll-bar-thumb scroll-bar-thumb-x" {...useGesture(useLocal({onDragStart: scrollbarDragStart,onDrag: scrollbarXDrag}))()}/>
+				</div>
+				<div className="scroll-bar scroll-bar-y">
+					<div className="scroll-bar-thumb scroll-bar-thumb-y" {...useGesture(useLocal({onDragStart: scrollbarDragStart,onDrag: scrollbarYDrag}))()}/>
+				</div>
 			</div>
-			<div className="scroll-bar scroll-bar-x">
-				<div className="scroll-bar-thumb scroll-bar-thumb-x" {...useGesture(useLocal({onDragStart: scrollbarDragStart,onDrag: scrollbarXDrag}))()}/>
-			</div>
-			<div className="scroll-bar scroll-bar-y">
-				<div className="scroll-bar-thumb scroll-bar-thumb-y" {...useGesture(useLocal({onDragStart: scrollbarDragStart,onDrag: scrollbarYDrag}))()}/>
-			</div>
-		</div>
+		</ScrollContext.Provider>
 	)
 
 	function componentDidMount(){
-		local.scrollContainer=(ref as MutableRefObject<null>).current
+		local.scrollContainer=(ref as MutableRefObject<HTMLElement>).current!
 		local.scrollViewport=local.scrollContainer.children[0]
 		local.scrollContentWrapper=local.scrollViewport.children[0]
 
@@ -73,35 +93,49 @@ export default memo(forwardRef<any,PropsWithoutRef<any>>(function Scroll({
 
 		wheelInit(local.scrollViewport)
 		local.scrollViewport.dispatchEvent(new CustomEvent('scroll')) // init
+
+		const scrollItems=local.scrollContainer.querySelectorAll(`.scroll-item[data-scroll-id="${id}"]`)
+		for(let scrollItem of scrollItems){
+			const scrollContainer=scrollItem.closest('.scroll-container')!
+			const boundingClientRect=scrollItem.getBoundingClientRect()
+			scrollItem.style.setProperty('--scrollOffsetTop',String(boundingClientRect.top+scrollContainer.scrollTop))
+			scrollItem.style.setProperty('--scrollOffsetLeft',String(boundingClientRect.left+scrollContainer.scrollLeft))
+		}
 	}
 }))
 
-const scrollXOptions={left: 0,behavior: 'instant'}
-const scrollYOptions={top: 0,behavior: 'instant'}
-
-// High-frequency function
-globalAutoResizeObserver.addHandler('scrollViewportResize',function(entry:ResizeObserverEntry){
+export function scrollViewportResize(entry:ResizeObserverEntry){
 	const scrollViewport=entry.target
 	const {style}=scrollViewport.parentElement! // scrollContainer.style
 	style.setProperty('--scrollWidth',String(scrollViewport.scrollWidth))
 	style.setProperty('--scrollHeight',String(scrollViewport.scrollHeight))
 	style.setProperty('--scrollClientWidth',String(scrollViewport.clientWidth))
 	style.setProperty('--scrollClientHeight',String(scrollViewport.clientHeight))
-})
+	// TODO: scrollTop, scrollLeft
+}
 
-// High-frequency function
-globalAutoResizeObserver.addHandler('scrollContentWrapperResize',function(entry:ResizeObserverEntry){
+export function scrollContentWrapperResize(entry:ResizeObserverEntry){
 	const scrollViewport=entry.target.parentElement!
 	const {style}=scrollViewport.parentElement! // scrollContainer.style
 	style.setProperty('--scrollWidth',String(scrollViewport.scrollWidth))
 	style.setProperty('--scrollHeight',String(scrollViewport.scrollHeight))
-})
+	// TODO: scrollTop, scrollLeft
+}
+
+// High-frequency function
+globalAutoResizeObserver.addHandler('scrollViewportResize',scrollViewportResize)
+
+// High-frequency function
+globalAutoResizeObserver.addHandler('scrollContentWrapperResize',scrollContentWrapperResize)
 
 function scrollbarDragStart({target}:any){
 	const scrollViewport=target.parentElement.parentElement.children[0] as ScrollElement
-	scrollViewport.smooth=scrollViewport.parentElement!.classList.contains('smooth-scroll')
+	scrollViewport.smooth=scrollViewport.parentElement!.classList.contains('smooth-wheel')
 	scrollViewport.duration=+getComputedStyle(scrollViewport).getPropertyValue('--smoothScrollDuration')
 }
+
+const scrollXOptions={left: 0,behavior: 'instant'}
+const scrollYOptions={top: 0,behavior: 'instant'}
 
 // High-frequency function
 function scrollbarXDrag({delta,target}:any){
@@ -157,7 +191,7 @@ function scrollEnd(e:HTMLElement,style:CSSStyleDeclaration,scrollTop:number,scro
 function wheelInit(scrollViewport:ScrollElement){
 	scrollViewport.scrollTopTarget=scrollViewport.scrollTop
 	scrollViewport.scrollLeftTarget=scrollViewport.scrollLeft
-	scrollViewport.smooth=scrollViewport.parentElement!.classList.contains('smooth-scroll')
+	scrollViewport.smooth=scrollViewport.parentElement!.classList.contains('smooth-wheel')
 	scrollViewport.wheelXTimestamp=scrollViewport.wheelYTimestamp=Date.now()
 	scrollViewport.deltaX=scrollViewport.deltaY=0
 	scrollViewport.animatingX=scrollViewport.animatingY=false
@@ -170,7 +204,7 @@ function wheel(e:React.WheelEvent<HTMLElement>){
 	const {classList}=scrollViewport.parentElement! // scrollContainer.classList
 	const scrollX=classList.contains('scroll-x')
 	const scrollY=classList.contains('scroll-y')
-	const smooth=classList.contains('smooth-scroll')
+	const smooth=classList.contains('smooth-wheel')
 	
 	const {clientWidth,scrollWidth}=scrollViewport
 	
