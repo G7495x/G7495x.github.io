@@ -1,3 +1,5 @@
+// TODO: listeners and dispatchEvents
+
 // 1. <div data-onresize="handlerName">
 // 2. globalAutoResizeObserver.addHandler('handlerName',e=>console.log('onresize event'))
 

@@ -23,6 +23,8 @@
 	--scrollYPhase: 0; // Handling 0/0 case
 	--scrollXPhase: calc(var(--scrollLeft) / (var(--scrollWidth) - var(--scrollClientWidth)));
 	--scrollYPhase: calc(var(--scrollTop) / (var(--scrollHeight) - var(--scrollClientHeight)));
+	--scrollXDirection: clamp(-1,var(--scrollXVelocity) * 2 + 1,1);
+	--scrollYDirection: clamp(-1,var(--scrollYVelocity) * 2 + 1,1);
 
 	position: relative;
 	overflow: hidden !important; // !important resolves SuperGrids.css scroll-x scroll-y conflict

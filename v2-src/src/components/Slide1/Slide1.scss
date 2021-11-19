@@ -1,16 +1,16 @@
 @import '../../_variables';
 
 #Slide1{
-	transform: translateZ(0px);
+	transform: translateZ(-.75px) scale(1.75); @include media-breakpoint-up(sm){ transform: translateZ(-2px) scale(3); }
 	width: calc(var(--scrollClientWidth) * 1px);
-	@include media-breakpoint-up(sm){ padding-right: 60px !important; }
-	>div{
-		transform: translateZ(-2px);
-		height: 100%;
-		@include gap-x(30px);
-	}
+	@include media-breakpoint-up(sm){ padding-right: var(--vertical-divider-width) !important; }
+
 	.top-name{
 		>b{ font-weight: 400 !important; }
+	}
+	.text-section{
+		width: calc(65px + 12vh);
+		min-width: 65px + 72px;
 	}
 	.vertical-title{
 		font-size: max(12vh,72px);

@@ -1,22 +1,32 @@
-
 .scroll-item{
-	--scrollItemPhaseX: calc(1 - clamp(
-		0,
-		(var(--scrollLeft) + var(--scrollClientWidth) - var(--scrollOffsetLeft)) /
-		(var(--scrollClientWidth) + var(--clientWidth)),
-		1
-	));
-	--scrollItemPhaseY: calc(1 - clamp(
-		0,
-		(var(--scrollTop) + var(--scrollClientHeight) - var(--scrollOffsetTop)) /
-		(var(--scrollClientHeight) + var(--clientHeight)),
-		1
-	));
 	// TODO: Phase offsets
+	--scrollItemPhaseXPure: calc(1 - (
+		var(--scrollLeft) + var(--scrollClientWidth) - var(--scrollItemOffsetLeft)) /
+		(var(--scrollClientWidth) + var(--clientWidth)
+	));
+	--scrollItemPhaseYPure: calc(1 - (
+		var(--scrollTop) + var(--scrollClientHeight) - var(--scrollItemOffsetTop)) /
+		(var(--scrollClientHeight) + var(--clientHeight)
+	));
 
-	// TODO: Trigger offsets
-	--scrollItemTriggerX: clamp(0,min(var(--scrollItemPhaseX),1 - var(--scrollItemPhaseX)) * 1000000,1);
-	--scrollItemTriggerY: clamp(0,min(var(--scrollItemPhaseY),1 - var(--scrollItemPhaseY)) * 1000000,1);
+	--scrollItemPhaseX: clamp(0,var(--scrollItemPhaseXPure),1);
+	--scrollItemPhaseY: clamp(0,var(--scrollItemPhaseYPure),1);
+
+	// Trigger (Square) wave = clamp(0,Triangle*100000,1)
+	// Triangle wave = min(x,1-x)
+	--scrollItemTriggerX: clamp(0,min(var(--scrollItemPhaseXPure),1 - var(--scrollItemPhaseXPure)) * 100000,1);
+	--scrollItemTriggerY: clamp(0,min(var(--scrollItemPhaseYPure),1 - var(--scrollItemPhaseYPure)) * 100000,1);
 	--scrollItemTriggerXInv: calc(1 - var(--scrollItemTriggerX));
 	--scrollItemTriggerYInv: calc(1 - var(--scrollItemTriggerY));
+
+	// TODO-FUTURE: CSS @property integer to round-off
+	// {-1,0,1}. Max of two unit-step functions.
+	--scrollItemSignedTriggerX: max(
+		clamp(-1, var(--scrollItemPhaseXPure)      * 100000,0),
+		clamp(-1,(var(--scrollItemPhaseXPure) - 1) * 100000,1)
+	);
+	--scrollItemSignedTriggerY: max(
+		clamp(-1, var(--scrollItemPhaseYPure)      * 100000,0),
+		clamp(-1,(var(--scrollItemPhaseYPure) - 1) * 100000,1)
+	);
 }

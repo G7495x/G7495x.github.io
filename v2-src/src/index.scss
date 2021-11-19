@@ -43,11 +43,12 @@ hr{
 	border-top: 1px solid currentColor;
 }
 .vc{ border-left: 1px solid currentColor; }
-hr,.vc{ opacity: .1; }
+hr,.vc{ opacity: .1 !important	; }
 
+:root{ --vertical-divider-width: 55px }
 .vertical-divider{
-	width: 25px;
-	margin-left: 5px !important;
+	width: var(--vertical-divider-width);
+	@include py(15px);
 }
 
 .dot{
@@ -74,5 +75,31 @@ hr,.vc{ opacity: .1; }
 		bottom: 0;
 		left: 0;
 		width: 40px;
+	}
+}
+
+.mx-m15{ @include mx(-15px) }
+.gap-x-15{ @include gap-x(15px) }
+.gap-y-15{ @include gap-y(15px) }
+.gap-x-30{ @include gap-x(30px) }
+.gap-y-30{ @include gap-y(30px) }
+.fit-x-15{ @include fit-x(15px) }
+.fit-x-m15{ @include fit-x(-15px) }
+.py-5{ @include py(5px)}
+
+.scroll-item{
+	&.slide-left>*{
+		transform: translateX(calc(var(--scrollItemSignedTriggerX) * 25%));
+		opacity: var(--scrollItemTriggerX);
+		transition:
+			transform 2s,
+			opacity 2s;
+	}
+	&.slide-left-xtra>*{
+		transform: translateX(calc(var(--scrollItemSignedTriggerX) * 50%));
+		opacity: var(--scrollItemTriggerX);
+		transition:
+			transform 2s,
+			opacity 2s;
 	}
 }

@@ -1,4 +1,4 @@
-import React,{createContext,forwardRef,memo,MutableRefObject,PropsWithoutRef,RefObject,useRef} from 'react'
+import React,{cloneElement,createContext,forwardRef,Fragment,isValidElement,memo,MutableRefObject,PropsWithoutRef,useRef} from 'react'
 import {clamp} from 'lodash'
 import {useGesture} from '@use-gesture/react'
 
@@ -7,17 +7,17 @@ import useLocal from '../../hooks/useLocal'
 import useLifecycle from '../../hooks/useLifecycle'
 import globalAutoResizeObserver from '../../dom/globalAutoResizeObserver'
 import useUuid from '../../hooks/useUuid'
-import useMemoObject from '../../hooks/useMemoObject'
+import usePreEffect from '../../hooks/usePreEffect'
 
-// TODO: Remove scroll-content-wrapper, add scrollContentWrapperResize for children
-// TODO: ScrollItem intersection observer
-// TODO: ScrollItem Handle resizes
+// TODO: Fix smooth-wheel autoscroll jump issue
 // TODO: Fix smooth-wheel page-zoom issue
 // TODO: Fix smooth-wheel nested scroll issue
+// TODO: ScrollItem intersection observer (needed for parallax ScrollItem)
 // TODO-FUTURE: wheel css step multiplier
 // TODO-FUTURE: wheel css step acceleration
 // TODO-FUTURE: wheel css time dilation factor
 // TODO-FUTURE: Scroll snapping support
+// TODO-FUTURE: Lazy loading support
 
 export interface ScrollElement extends HTMLElement{
 	scrollTopTarget:number
@@ -42,7 +42,6 @@ export interface ScrollElement extends HTMLElement{
 export interface ScrollProps extends PropsWithoutRef<any>{
 	onScroll?:React.UIEventHandler<HTMLElement>
 	onWheel?:React.WheelEventHandler<HTMLElement>
-	addContentWrapper?:boolean
 	viewportProps?:PropsWithoutRef<any>
 }
 
@@ -53,7 +52,6 @@ export default memo(forwardRef<any,ScrollProps>(function Scroll({
 	children,
 	onScroll,
 	onWheel,
-	addContentWrapper=true,
 	viewportProps={},
 	...props},
 	ref,
@@ -63,6 +61,7 @@ export default memo(forwardRef<any,ScrollProps>(function Scroll({
 
 	const local=useLocal()
 	useLifecycle({componentDidMount})
+	usePreEffect(getContentWrapper,[children])
 
 	viewportProps.className='scroll-viewport '+(viewportProps.className??'')
 	viewportProps['data-onresize']='scrollViewportResize '+(viewportProps['data-onresize']??'')
@@ -70,8 +69,8 @@ export default memo(forwardRef<any,ScrollProps>(function Scroll({
 	return (
 		<ScrollContext.Provider value={id}>
 			<div {...props} className={'scroll-container '+(className??'')} {...{ref}} data-scroll-id={id}>
-				<div {...useMemoObject(viewportProps)} {...{onScroll,onWheel}}>
-					{addContentWrapper?<div className="scroll-content-wrapper" data-onresize="scrollContentWrapperResize">{children}</div>:children}
+				<div {...viewportProps} {...{onScroll,onWheel}}>
+					{local.children}
 				</div>
 				<div className="scroll-bar scroll-bar-x">
 					<div className="scroll-bar-thumb scroll-bar-thumb-x" {...useGesture(useLocal({onDragStart: scrollbarDragStart,onDrag: scrollbarXDrag}))()}/>
@@ -91,18 +90,27 @@ export default memo(forwardRef<any,ScrollProps>(function Scroll({
 		local.scrollViewport.addEventListener('wheel',wheel,{passive: false})
 		local.scrollViewport.addEventListener('scroll',scroll)
 
-		wheelInit(local.scrollViewport)
+		initWheel(local.scrollViewport)
 		local.scrollViewport.dispatchEvent(new CustomEvent('scroll')) // init
+	}
 
-		const scrollItems=local.scrollContainer.querySelectorAll(`.scroll-item[data-scroll-id="${id}"]`)
-		for(let scrollItem of scrollItems){
-			const scrollContainer=scrollItem.closest('.scroll-container')!
-			const boundingClientRect=scrollItem.getBoundingClientRect()
-			scrollItem.style.setProperty('--scrollOffsetTop',String(boundingClientRect.top+scrollContainer.scrollTop))
-			scrollItem.style.setProperty('--scrollOffsetLeft',String(boundingClientRect.left+scrollContainer.scrollLeft))
-		}
+	function getContentWrapper(){
+		local.children=(isValidElement(children) && children.type!==Fragment && children.props.className.startsWith('scroll-content-wrapper'))?
+			cloneElement(children,{'data-onresize':'scrollContentResize '+(children.props['data-onresize']??'')})
+			:<div className="scroll-content-wrapper" data-onresize="scrollContentResize">{children}</div>
 	}
 }))
+
+export function initScrollItemOffsets(scrollContainer:HTMLElement){
+	const scrollViewport=scrollContainer.children[0]
+	const id=scrollContainer.dataset['scrollId']
+	const scrollItems=scrollContainer.querySelectorAll(`.scroll-item[data-scroll-container-id="${id}"]`) as unknown as HTMLElement[]
+	for(let scrollItem of scrollItems){
+		const boundingClientRect=scrollItem.getBoundingClientRect()
+		scrollItem.style.setProperty('--scrollItemOffsetTop',String(boundingClientRect.top+scrollViewport.scrollTop))
+		scrollItem.style.setProperty('--scrollItemOffsetLeft',String(boundingClientRect.left+scrollViewport.scrollLeft))
+	}
+}
 
 export function scrollViewportResize(entry:ResizeObserverEntry){
 	const scrollViewport=entry.target
@@ -111,22 +119,23 @@ export function scrollViewportResize(entry:ResizeObserverEntry){
 	style.setProperty('--scrollHeight',String(scrollViewport.scrollHeight))
 	style.setProperty('--scrollClientWidth',String(scrollViewport.clientWidth))
 	style.setProperty('--scrollClientHeight',String(scrollViewport.clientHeight))
-	// TODO: scrollTop, scrollLeft
 }
 
-export function scrollContentWrapperResize(entry:ResizeObserverEntry){
-	const scrollViewport=entry.target.parentElement!
-	const {style}=scrollViewport.parentElement! // scrollContainer.style
+// Mainly used for scrollbar size
+export function scrollContentResize(entry:ResizeObserverEntry){
+	const scrollViewport=entry.target.closest('.scroll-viewport')!
+	const scrollContainer=scrollViewport.parentElement!
+	const {style}=scrollContainer
 	style.setProperty('--scrollWidth',String(scrollViewport.scrollWidth))
 	style.setProperty('--scrollHeight',String(scrollViewport.scrollHeight))
-	// TODO: scrollTop, scrollLeft
+	initScrollItemOffsets(scrollContainer) // TODO: Check performance, fix calculation
 }
 
 // High-frequency function
 globalAutoResizeObserver.addHandler('scrollViewportResize',scrollViewportResize)
 
 // High-frequency function
-globalAutoResizeObserver.addHandler('scrollContentWrapperResize',scrollContentWrapperResize)
+globalAutoResizeObserver.addHandler('scrollContentResize',scrollContentResize)
 
 function scrollbarDragStart({target}:any){
 	const scrollViewport=target.parentElement.parentElement.children[0] as ScrollElement
@@ -143,7 +152,7 @@ function scrollbarXDrag({delta,target}:any){
 	scrollXOptions.left=delta[0]*scrollViewport.scrollWidth/scrollViewport.clientWidth
 	scrollViewport.smooth?
 		smoothScrollXTo(scrollViewport,scrollXOptions.left):
-		// @ts-expect-error TS2322
+		// @ts-expect-error TS2345
 		scrollViewport.scrollBy(scrollXOptions)
 }
 
@@ -153,7 +162,7 @@ function scrollbarYDrag({delta,target}:any){
 	scrollYOptions.top=delta[1]*scrollViewport.scrollHeight/scrollViewport.clientHeight
 	scrollViewport.smooth?
 		smoothScrollYTo(scrollViewport,scrollYOptions.top):
-		// @ts-expect-error TS2322
+		// @ts-expect-error TS2345
 		scrollViewport.scrollBy(scrollYOptions)
 }
 
@@ -164,12 +173,16 @@ function scroll(e:React.UIEvent<HTMLElement>){
 	const {scrollTop,scrollLeft}=scrollViewport
 
 	const yVelocity=scrollTop-+style.getPropertyValue('--scrollTop')
+	const ySpeed=Math.abs(yVelocity)
 	style.setProperty('--scrollYVelocity',String(yVelocity))
-	style.setProperty('--scrollYSpeed',String(Math.abs(yVelocity)))
+	style.setProperty('--scrollYSpeed',String(ySpeed))
+	// style.setProperty('--scrollYDirection',String(yVelocity/ySpeed || 1)) // Moved to CSS
 
 	const xVelocity=scrollLeft-+style.getPropertyValue('--scrollLeft')
+	const xSpeed=Math.abs(xVelocity)
 	style.setProperty('--scrollXVelocity',String(xVelocity))
-	style.setProperty('--scrollXSpeed',String(Math.abs(xVelocity)))
+	style.setProperty('--scrollXSpeed',String(xSpeed))
+	// style.setProperty('--scrollXDirection',String(xVelocity/xSpeed || 1)) // Moved to CSS
 
 	style.setProperty('--scrollTop',String(scrollTop))
 	style.setProperty('--scrollLeft',String(scrollLeft))
@@ -188,7 +201,7 @@ function scrollEnd(e:HTMLElement,style:CSSStyleDeclaration,scrollTop:number,scro
 	}
 }
 
-function wheelInit(scrollViewport:ScrollElement){
+function initWheel(scrollViewport:ScrollElement){
 	scrollViewport.scrollTopTarget=scrollViewport.scrollTop
 	scrollViewport.scrollLeftTarget=scrollViewport.scrollLeft
 	scrollViewport.smooth=scrollViewport.parentElement!.classList.contains('smooth-wheel')
@@ -200,14 +213,14 @@ function wheelInit(scrollViewport:ScrollElement){
 function wheel(e:React.WheelEvent<HTMLElement>){
 	let {deltaX,deltaY}=e
 	const scrollViewport=e.currentTarget as ScrollElement
-	
+
 	const {classList}=scrollViewport.parentElement! // scrollContainer.classList
 	const scrollX=classList.contains('scroll-x')
 	const scrollY=classList.contains('scroll-y')
 	const smooth=classList.contains('smooth-wheel')
-	
+
 	const {clientWidth,scrollWidth}=scrollViewport
-	
+
 	// Horizontal scrolling support for mouse wheel
 	if(scrollX && !scrollY && deltaX===0){
 		deltaX=deltaY
@@ -231,13 +244,11 @@ function wheel(e:React.WheelEvent<HTMLElement>){
 	}
 }
 
-const deltaTarget=.49 // Exponential decay final value
-
 export function smoothScrollXTo(e:ScrollElement,deltaX:number,duration:number=e.duration){
 	if(!deltaX) return // Prevents no scroll situations
 	e.scrollLeftTarget=clamp(e.scrollLeftTarget+deltaX,0,e.scrollWidth-e.clientWidth)
 	e.deltaX=e.scrollLeftTarget-e.scrollLeft
-	e.smoothScrollXDecayFactor=getDecayFactor(e.deltaX,duration)
+	e.smoothScrollXDecayFactor=calcDecayFactor(e.deltaX,duration)
 	if(!e.animatingX){ // Prevents multiple animation calls
 		e.animatingX=true
 		e.wheelXTimestamp=Date.now()
@@ -249,7 +260,7 @@ export function smoothScrollYTo(e:ScrollElement,deltaY:number,duration:number=e.
 	if(!deltaY) return // Prevents no scroll situations
 	e.scrollTopTarget=clamp(e.scrollTopTarget+deltaY,0,e.scrollHeight-e.clientHeight)
 	e.deltaY=e.scrollTopTarget-e.scrollTop
-	e.smoothScrollYDecayFactor=getDecayFactor(e.deltaY,duration)
+	e.smoothScrollYDecayFactor=calcDecayFactor(e.deltaY,duration)
 	if(!e.animatingY){ // Prevents multiple animation calls
 		e.animatingY=true
 		e.wheelYTimestamp=Date.now()
@@ -269,16 +280,21 @@ export function smoothScrollYHalt(e:ScrollElement){
 	e.animatingY=false
 }
 
+const deltaTarget=.49 // Exponential decay cutoff value (render loop halt condition).
+
 // Returns decay factor from delta and duration.
 // The decay factor is for 60fps.
-// For fps variation correction, Math.pow(decayFactor,frameDelayInSeconds/(1/60))
-// TODO: .49 is the delta cutoff in our animation
-function getDecayFactor(delta:number,duration:number,deltaTarget:number=.49){ return Math.exp(Math.log(deltaTarget/Math.abs(delta))/(60*duration)) }
+// For fps correction, use Math.pow(decayFactor,frameDelayInSeconds/(1/60)).
+// deltaTarget (=.49) is the delta cutoff in our animation (render loop halt condition).
+function calcDecayFactor(delta:number,duration:number,fps:number=60,deltaTarget:number=.49){
+	return Math.exp(Math.log(deltaTarget/Math.abs(delta))/(fps*duration))
+}
 
 // Do not call directly. Called within smoothScrollXTo only.
 // High-frequency function
 function smoothScrollXStep(e:ScrollElement){
 	if(!e.animatingX) return
+	// TODO-FUTURE: Remove FPS correction and get display refresh-rate
 	e.deltaX*=Math.pow(e.smoothScrollXDecayFactor,(Date.now()-e.wheelXTimestamp)/(1000/60)) // deltaX*=smoothScrollXDecayFactor with fps correction
 	e.wheelXTimestamp=Date.now()
 	scrollXOptions.left=Math.round(e.scrollLeftTarget-e.deltaX) // TODO-FUTURE: Browser fix for fractional scroll values
@@ -292,6 +308,7 @@ function smoothScrollXStep(e:ScrollElement){
 // High-frequency function
 function smoothScrollYStep(e:ScrollElement){
 	if(!e.animatingY) return
+	// TODO-FUTURE: Remove FPS correction and get display refresh-rate
 	e.deltaY*=Math.pow(e.smoothScrollYDecayFactor,(Date.now()-e.wheelYTimestamp)/(1000/60)) // deltaY*=smoothScrollYDecayFactor with fps correction
 	e.wheelYTimestamp=Date.now()
 	scrollYOptions.top=Math.round(e.scrollTopTarget-e.deltaY) // TODO-FUTURE: Browser fix for fractional scroll values
