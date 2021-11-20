@@ -22,8 +22,8 @@ export default function Slide2(){
 						<div className="h7 text-muted">+ Resources</div>
 					</div>
 					<div className="f-grow"/>
-					<div className="links mb-m8 row gap-y-15 f-vert">
-					<span className="link outline">
+					<div className="links row gap-y-15 f-vert mb-0">
+						<span className="link outline">
 						<a href="mailto://G7495x@gmail.com" target="_blank" className="fa fa-envelope"/>
 						<span><span className="h7 text-muted hide" style={{userSelect: 'none'}}>Email: </span>G7495x<span className="h7 text-muted">@gmail.com</span></span>
 					</span>
@@ -35,7 +35,7 @@ export default function Slide2(){
 							<i className="fa fa-behance"/>
 							<span>Behance<span className="h7 text-muted">.net/G7495x</span></span>
 						</a>
-						<a className="link outline" href="https://Github.com/G7495x" target="_blank">
+						<a className="link outline" href="https://github.com/G7495x" target="_blank">
 							<i className="fa fa-github"/>
 							<span>Github<span className="h7 text-muted">.com/G7495x</span></span>
 						</a>
@@ -45,10 +45,10 @@ export default function Slide2(){
 						</a>
 						{/* Twitter */}
 						{/* Instagram */}
-						{/* Pinterest? */}
 						{/* DeviantArt */}
 						{/* ArtStation */}
 						{/* Vimeo */}
+						{/* Pinterest? */}
 						{/* SketchFab? */}
 
 						{/* CodePen */}

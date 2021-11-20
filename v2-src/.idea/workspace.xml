@@ -2,29 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="113f84ce-aa07-49a4-923a-2ff601ae6e3a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/assets/cookies.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/Slide4/Slide4.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/Slide4/Slide4.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/data.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/_variables.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/_variables.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/App/App.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/App/App.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/App/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/App/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Slide1/Slide1.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Slide1/Slide1.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Slide1/Slide1.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Slide1/Slide1.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Slide2/Slide2.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Slide2/Slide2.scss" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/Slide2/Slide2.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Slide2/Slide2.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Slide3/Slide3.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Slide3/Slide3.scss" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/Slide3/Slide3.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Slide3/Slide3.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Slide4/Slide4.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Slide4/Slide4.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/index.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/components/Scroll/Scroll.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/components/Scroll/Scroll.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/components/Scroll/Scroll.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/components/Scroll/Scroll.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/components/ScrollItem/ScrollItem.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/components/ScrollItem/ScrollItem.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/components/ScrollItem/ScrollItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/components/ScrollItem/ScrollItem.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/dom/globalAutoResizeObserver.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/dom/globalAutoResizeObserver.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -16,15 +16,12 @@
 body{
 	overflow: hidden;
 	font-family: FontAwesome,'Bai Jamjuree','Segoe UI Symbol','Apple Symbols',sans-serif;
-	//font-family: FontAwesome,'Montserrat',sans-serif;
 	font-weight: 500;
 
 	@include bg-color($gray-0000);
 	@include text-color($gray-1000);
-	//&.dark-mode{
-	//	@include bg-color($gray-0100);
-	//	@include text-color($gray-0750);
-	//}
+
+	@media screen and (min-height: 1080px){ zoom: calc(var(--innerHeight) / 1080); } // Large screens
 }
 
 body,
