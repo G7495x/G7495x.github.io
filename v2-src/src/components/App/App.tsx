@@ -42,9 +42,8 @@ export default function App(){
 
 	async function componentDidMount(){
 		await properOnLoadPromise
-		const {current}=ref
-		current.classList.add('loaded')
-		current.addEventListener('animationend',()=>window.globalAutoResizeObserver.trigger(scrollContentRef.current))
+		setTimeout(()=>ref.current.classList.add('loaded'),1000)
+		// ref.current.addEventListener('animationend',()=>window.globalAutoResizeObserver.trigger(scrollContentRef.current))
 	}
 }
 

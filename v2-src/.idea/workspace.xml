@@ -2,19 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="113f84ce-aa07-49a4-923a-2ff601ae6e3a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/utils/dom/isTrackpad.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/utils/dom/properOnLoadPromise.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../v2/assets/index.e10b9002.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/_animations.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/_animations.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/App/App.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/App/App.scss" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/App/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/App/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Slide3/Slide3.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Slide3/Slide3.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Slide4/Slide4.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Slide4/Slide4.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/utils/components/Scroll/Scroll.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/components/Scroll/Scroll.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/components/ScrollItem/ScrollItem.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/components/ScrollItem/ScrollItem.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../v2/assets/index.b36f26a2.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../v2/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../v2/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,7 +81,7 @@
       <workItem from="1636977246767" duration="26708000" />
       <workItem from="1637053770683" duration="7956000" />
       <workItem from="1637077245860" duration="120222000" />
-      <workItem from="1637590331875" duration="5695000" />
+      <workItem from="1637590331875" duration="11106000" />
     </task>
     <servers />
   </component>

@@ -10,7 +10,6 @@ import useUuid from '../../hooks/useUuid'
 import usePreEffect from '../../hooks/usePreEffect'
 import isTrackpad from '../../dom/isTrackpad'
 
-// TODO: Fix smooth-wheel autoscroll jump issue
 // TODO: Fix smooth-wheel page-zoom issue
 // TODO: Fix smooth-wheel nested scroll issue
 // TODO-FUTURE: wheel css step multiplier
@@ -19,24 +18,24 @@ import isTrackpad from '../../dom/isTrackpad'
 // TODO-FUTURE: Scroll snapping support
 // TODO-FUTURE: Lazy loading support
 
-export interface ScrollElement extends HTMLElement{
-	scrollTopTarget:number
-	scrollLeftTarget:number
+export interface ScrollViewport extends HTMLElement{
+	scrollTopTarget?:number
+	scrollLeftTarget?:number
 
 	smooth:boolean // Used in smoothScroll. Updated onWheel and onScrollbarDrag
 	duration:number // Used in smoothScroll (default parameter). Updated onWheel and onScrollbarDrag
 
-	deltaX:number // Used only in smoothScroll
-	deltaY:number // Used only in smoothScroll
+	deltaX?:number // Used only in smoothScroll
+	deltaY?:number // Used only in smoothScroll
 
-	wheelXTimestamp:number // Used only in smoothScroll
-	wheelYTimestamp:number // Used only in smoothScroll
+	wheelXTimestamp?:number // Used only in smoothScroll
+	wheelYTimestamp?:number // Used only in smoothScroll
 
-	smoothScrollXDecayFactor:number // Used only in smoothScroll (Exponential ease function)
-	smoothScrollYDecayFactor:number // Used only in smoothScroll (Exponential ease function)
+	smoothScrollXDecayFactor?:number // Used only in smoothScroll (Exponential ease function. See below of more info.)
+	smoothScrollYDecayFactor?:number // Used only in smoothScroll (Exponential ease function. See below of more info.)
 
-	animatingX:boolean // Indicates if smoothScroll animation loop is active
-	animatingY:boolean // Indicates if smoothScroll animation loop is active
+	animatingX?:boolean // Indicates if smoothScroll animation loop is active
+	animatingY?:boolean // Indicates if smoothScroll animation loop is active
 }
 
 export interface ScrollProps extends PropsWithoutRef<any>{
@@ -90,8 +89,7 @@ export default memo(forwardRef<any,ScrollProps>(function Scroll({
 		local.scrollViewport.addEventListener('wheel',wheel,{passive: false})
 		local.scrollViewport.addEventListener('scroll',scroll)
 
-		initWheel(local.scrollViewport)
-		local.scrollViewport.dispatchEvent(new CustomEvent('scroll')) // init
+		local.scrollViewport.dispatchEvent(new CustomEvent('scroll')) // init CSS properties
 	}
 
 	function getContentWrapper(){
@@ -128,7 +126,7 @@ export function scrollContentResize(entry:ResizeObserverEntry){
 	const {style}=scrollContainer
 	style.setProperty('--scrollWidth',String(scrollViewport.scrollWidth))
 	style.setProperty('--scrollHeight',String(scrollViewport.scrollHeight))
-	initScrollItemOffsets(scrollContainer) // TODO: Check performance, fix calculation
+	initScrollItemOffsets(scrollContainer) // TODO: Check performance, find workaround calculation
 }
 
 // High-frequency function
@@ -138,7 +136,7 @@ globalAutoResizeObserver.addHandler('scrollViewportResize',scrollViewportResize)
 globalAutoResizeObserver.addHandler('scrollContentResize',scrollContentResize)
 
 function scrollbarDragStart({target}:any){
-	const scrollViewport=target.parentElement.parentElement.children[0] as ScrollElement
+	const scrollViewport=target.parentElement.parentElement.children[0] as ScrollViewport
 	scrollViewport.smooth=scrollViewport.parentElement!.classList.contains('smooth-wheel')
 	scrollViewport.duration=+getComputedStyle(scrollViewport).getPropertyValue('--smoothScrollDuration')
 }
@@ -148,7 +146,7 @@ const scrollYOptions={top: 0,behavior: 'instant'}
 
 // High-frequency function
 function scrollbarXDrag({delta,target}:any){
-	const scrollViewport=target.parentElement.parentElement.children[0] as ScrollElement
+	const scrollViewport=target.parentElement.parentElement.children[0] as ScrollViewport
 	scrollXOptions.left=delta[0]*scrollViewport.scrollWidth/scrollViewport.clientWidth
 	scrollViewport.smooth?
 		smoothScrollXTo(scrollViewport,scrollXOptions.left):
@@ -158,7 +156,7 @@ function scrollbarXDrag({delta,target}:any){
 
 // High-frequency function
 function scrollbarYDrag({delta,target}:any){
-	const scrollViewport=target.parentElement.parentElement.children[0] as ScrollElement
+	const scrollViewport=target.parentElement.parentElement.children[0] as ScrollViewport
 	scrollYOptions.top=delta[1]*scrollViewport.scrollHeight/scrollViewport.clientHeight
 	scrollViewport.smooth?
 		smoothScrollYTo(scrollViewport,scrollYOptions.top):
@@ -168,7 +166,7 @@ function scrollbarYDrag({delta,target}:any){
 
 // High-frequency function
 function scroll(e:React.UIEvent<HTMLElement>){
-	const scrollViewport=e.target as ScrollElement
+	const scrollViewport=e.target as ScrollViewport
 	const {style}=scrollViewport.parentElement! // scrollContainer.style
 	const {scrollTop,scrollLeft}=scrollViewport
 
@@ -187,38 +185,33 @@ function scroll(e:React.UIEvent<HTMLElement>){
 	style.setProperty('--scrollTop',String(scrollTop))
 	style.setProperty('--scrollLeft',String(scrollLeft))
 
-	setTimeout(()=>scrollEnd(scrollViewport,style,scrollTop,scrollLeft),300 /* Experimentally determined. Boundary scenario: 60hz, devicePixelRatio=1 */)
+	setTimeout(()=>scrollEnd(scrollViewport,style,scrollTop,scrollLeft),500 /* Experimentally determined. Boundary scenario: 60hz & devicePixelRatio=1 */)
 }
 
-function scrollEnd(e:HTMLElement,style:CSSStyleDeclaration,scrollTop:number,scrollLeft:number){
-	if(e.scrollTop===scrollTop){
+// High-frequency function
+function scrollEnd(scrollViewport:ScrollViewport,style:CSSStyleDeclaration,scrollTop:number,scrollLeft:number){
+	if(scrollViewport.scrollTop===scrollTop){
 		style.setProperty('--scrollYVelocity','0')
 		style.setProperty('--scrollYSpeed','0')
+		scrollViewport.animatingX && smoothScrollYHalt(scrollViewport)
 	}
-	if(e.scrollLeft===scrollLeft){
+	if(scrollViewport.scrollLeft===scrollLeft){
 		style.setProperty('--scrollXVelocity','0')
 		style.setProperty('--scrollXSpeed','0')
+		scrollViewport.animatingY && smoothScrollXHalt(scrollViewport)
 	}
-}
-
-function initWheel(scrollViewport:ScrollElement){
-	scrollViewport.scrollTopTarget=scrollViewport.scrollTop
-	scrollViewport.scrollLeftTarget=scrollViewport.scrollLeft
-	scrollViewport.smooth=scrollViewport.parentElement!.classList.contains('smooth-wheel')
-	scrollViewport.wheelXTimestamp=scrollViewport.wheelYTimestamp=Date.now()
-	scrollViewport.deltaX=scrollViewport.deltaY=0
-	scrollViewport.animatingX=scrollViewport.animatingY=false
 }
 
 function wheel(e:React.WheelEvent<HTMLElement>){
 	let {deltaX,deltaY}=e
-	const scrollViewport=e.currentTarget as ScrollElement
+	const scrollViewport=e.currentTarget as ScrollViewport
 
 	const {classList}=scrollViewport.parentElement! // scrollContainer.classList
 	const scrollX=classList.contains('scroll-x')
 	const scrollY=classList.contains('scroll-y')
-	const smooth=classList.contains('smooth-wheel')
-	const trackpadMode=isTrackpad(e)
+	const smoothMode=
+		!isTrackpad(e) &&
+		classList.contains('smooth-wheel')
 
 	const {clientWidth,scrollWidth}=scrollViewport
 
@@ -227,26 +220,32 @@ function wheel(e:React.WheelEvent<HTMLElement>){
 		deltaX=deltaY
 		deltaY=0
 
-		if(!(smooth && !trackpadMode)){ // Smooth scrolling handled below
-			// scrollViewport.scrollLeft+=e.deltaX
+		if(!smoothMode){ // Smooth scrolling handled below
+			// scrollViewport.scrollLeft+=deltaX
 			// Browser smooth scroll support
-			scrollViewport.scrollLeftTarget=clamp(scrollViewport.scrollLeftTarget+deltaX,0,scrollWidth-clientWidth)
+			scrollViewport.scrollLeftTarget=clamp((scrollViewport.scrollLeftTarget??scrollViewport.scrollLeft)+deltaX,0,scrollWidth-clientWidth)
 			scrollViewport.scrollLeft=scrollViewport.scrollLeftTarget
 		}
 	}
 
+	console.log(smoothMode)
 	// Smooth scrolling
-	if(smooth && !trackpadMode){
+	if(smoothMode){
 		e.preventDefault()
+
 		scrollViewport.duration=+getComputedStyle(scrollViewport).getPropertyValue('--smoothScrollDuration')
 		scrollX && smoothScrollXTo(scrollViewport,deltaX)
 		scrollY && smoothScrollYTo(scrollViewport,deltaY)
+	}else{
+		// TODO: trackpad to mousewheel transition
+		scrollViewport.animatingX && smoothScrollXHalt(scrollViewport)
+		scrollViewport.animatingY && smoothScrollYHalt(scrollViewport)
 	}
 }
 
-export function smoothScrollXTo(e:ScrollElement,deltaX:number,duration:number=e.duration){
+export function smoothScrollXTo(e:ScrollViewport,deltaX:number,duration:number=e.duration){
 	if(!deltaX) return // Prevents no scroll situations
-	e.scrollLeftTarget=clamp(e.scrollLeftTarget+deltaX,0,e.scrollWidth-e.clientWidth)
+	e.scrollLeftTarget=clamp((e.scrollLeftTarget??e.scrollLeft)+deltaX,0,e.scrollWidth-e.clientWidth)
 	e.deltaX=e.scrollLeftTarget-e.scrollLeft
 	e.smoothScrollXDecayFactor=calcDecayFactor(e.deltaX,duration)
 	if(!e.animatingX){ // Prevents multiple animation calls
@@ -256,9 +255,9 @@ export function smoothScrollXTo(e:ScrollElement,deltaX:number,duration:number=e.
 	}
 }
 
-export function smoothScrollYTo(e:ScrollElement,deltaY:number,duration:number=e.duration){
+export function smoothScrollYTo(e:ScrollViewport,deltaY:number,duration:number=e.duration){
 	if(!deltaY) return // Prevents no scroll situations
-	e.scrollTopTarget=clamp(e.scrollTopTarget+deltaY,0,e.scrollHeight-e.clientHeight)
+	e.scrollTopTarget=clamp((e.scrollTopTarget??e.scrollTop)+deltaY,0,e.scrollHeight-e.clientHeight)
 	e.deltaY=e.scrollTopTarget-e.scrollTop
 	e.smoothScrollYDecayFactor=calcDecayFactor(e.deltaY,duration)
 	if(!e.animatingY){ // Prevents multiple animation calls
@@ -268,16 +267,16 @@ export function smoothScrollYTo(e:ScrollElement,deltaY:number,duration:number=e.
 	}
 }
 
-export function smoothScrollXHalt(e:ScrollElement){
-	e.scrollLeftTarget=scrollXOptions.left
-	e.deltaX=0
-	e.animatingX=false
+export function smoothScrollXHalt(scrollViewport:ScrollViewport){
+	delete scrollViewport.scrollLeftTarget
+	delete scrollViewport.deltaX
+	delete scrollViewport.animatingX
 }
 
-export function smoothScrollYHalt(e:ScrollElement){
-	e.scrollTopTarget=scrollYOptions.top
-	e.deltaY=0
-	e.animatingY=false
+export function smoothScrollYHalt(scrollViewport:ScrollViewport){
+	delete scrollViewport.scrollTopTarget
+	delete scrollViewport.deltaY
+	delete scrollViewport.animatingY
 }
 
 const deltaTarget=.49 // Exponential decay cutoff value (render loop halt condition).
@@ -292,28 +291,28 @@ function calcDecayFactor(delta:number,duration:number,fps:number=60,deltaTarget:
 
 // Do not call directly. Called within smoothScrollXTo only.
 // High-frequency function
-function smoothScrollXStep(e:ScrollElement){
+function smoothScrollXStep(e:ScrollViewport){
 	if(!e.animatingX) return
-	// TODO-FUTURE: Remove FPS correction and get display refresh-rate
-	e.deltaX*=Math.pow(e.smoothScrollXDecayFactor,(Date.now()-e.wheelXTimestamp)/(1000/60)) // deltaX*=smoothScrollXDecayFactor with fps correction
+	// TODO-FUTURE: Remove FPS correction and use display refresh-rate
+	e.deltaX!*=Math.pow(e.smoothScrollXDecayFactor!,(Date.now()-e.wheelXTimestamp!)/(1000/60)) // deltaX*=smoothScrollXDecayFactor with fps correction
 	e.wheelXTimestamp=Date.now()
-	scrollXOptions.left=Math.round(e.scrollLeftTarget-e.deltaX) // TODO-FUTURE: Browser fix for fractional scroll values
+	scrollXOptions.left=Math.round(e.scrollLeftTarget!-e.deltaX!) // TODO-FUTURE: Browser should round off fractional values. .round() is only for 1px artifacts.
 	// @ts-expect-error TS2322
 	e.scrollTo(scrollXOptions)
-	if(Math.abs(e.deltaX)>deltaTarget) requestAnimationFrame(()=>smoothScrollXStep(e))
-	else e.animatingX=false
+	if(Math.abs(e.deltaX!)>deltaTarget) requestAnimationFrame(()=>smoothScrollXStep(e))
+	else delete e.animatingX
 }
 
 // Do not call directly. Called within smoothScrollYTo only.
 // High-frequency function
-function smoothScrollYStep(e:ScrollElement){
+function smoothScrollYStep(e:ScrollViewport){
 	if(!e.animatingY) return
-	// TODO-FUTURE: Remove FPS correction and get display refresh-rate
-	e.deltaY*=Math.pow(e.smoothScrollYDecayFactor,(Date.now()-e.wheelYTimestamp)/(1000/60)) // deltaY*=smoothScrollYDecayFactor with fps correction
+	// TODO-FUTURE: Remove FPS correction and use display refresh-rate
+	e.deltaY!*=Math.pow(e.smoothScrollYDecayFactor!,(Date.now()-e.wheelYTimestamp!)/(1000/60)) // deltaY*=smoothScrollYDecayFactor with fps correction
 	e.wheelYTimestamp=Date.now()
-	scrollYOptions.top=Math.round(e.scrollTopTarget-e.deltaY) // TODO-FUTURE: Browser fix for fractional scroll values
+	scrollYOptions.top=Math.round(e.scrollTopTarget!-e.deltaY!) // TODO-FUTURE: Browser should round off fractional values. .round() is only for 1px artifacts.
 	// @ts-expect-error TS2322
 	e.scrollTo(scrollYOptions)
-	if(Math.abs(e.deltaY)>deltaTarget) requestAnimationFrame(()=>smoothScrollYStep(e))
-	else e.animatingY=false
+	if(Math.abs(e.deltaY!)>deltaTarget) requestAnimationFrame(()=>smoothScrollYStep(e))
+	else delete e.animatingY
 }
