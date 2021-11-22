@@ -21,7 +21,7 @@ export default function Slide3(){
 							I enjoy being challenged & solving problems. I try my very best to be a resourceful individual, and an amiable figure. I have always been fascinated with technology, and it is this passion that led me to pursue a career in this field. I love experimenting and building proof-of-concepts, and as someone with both creative & technical expertise, I ensure that my works exhibit high precision and maximum attention to detail.
 						</Scroll>
 					</div>
-					<div className="text-right">
+					<div className="text-right" style={{marginBottom: '7.5px !important'}}>
 						<div className="h7 text-muted">A little,</div>
 						<h2 className="b900" style={{lineHeight: 1.125}}>About Me</h2>
 					</div>

@@ -2,3 +2,8 @@
 	0%{ transform: rotate(0) }
 	100%{ transform: rotate(360deg) }
 }
+
+@keyframes slideInLeft{
+	0%{ transform: translateX(1080px) }
+	100%{ transform: none }
+}

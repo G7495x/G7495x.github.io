@@ -20,12 +20,28 @@ body{
 
 	@include bg-color($gray-0000);
 	@include text-color($gray-1000);
-
-	@media screen and (min-height: 1080px){ zoom: calc(var(--innerHeight) / 1080); } // Large screens
 }
 
 body,
 #root{ display: contents }
+
+
+// CSS handle unusual displays ------------------------------------------------
+// min-width: 360px
+// min-height: 480px
+// max-height: 1080px
+#App{
+	--zoomRatio: min(
+		min(1,var(--innerWidth) / 360),
+		min(1,var(--innerHeight) / 480)
+	);
+	transform: scale(var(--zoomRatio));
+	transform-origin: 0 0;
+	width: calc(100% / var(--zoomRatio));
+	height: calc(100% / var(--zoomRatio));
+}
+body{ @media screen and (min-height: 1080px){ zoom: calc(var(--innerHeight) / 1080); } }
+// ------------------------------------------------ CSS handle unusual displays
 
 a{ color: inherit }
 

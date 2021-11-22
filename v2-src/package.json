@@ -1,6 +1,6 @@
 {
   "name": "g7495x",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "homepage": ".",
   "scripts": {
     "start": "vite --host",

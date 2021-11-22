@@ -4,10 +4,9 @@ import {StaticRouter} from 'react-router-dom'
 
 import './index.scss'
 import App from './components/App/App'
+import properOnLoadPromise from './utils/dom/properOnLoadPromise'
 
-window.onload=function(){
-	document.body.classList.add('loaded')
-}
+properOnLoadPromise.then(()=>document.body.classList.add('loaded'))
 
 ReactDOM.render(
 	/*<React.StrictMode>*/

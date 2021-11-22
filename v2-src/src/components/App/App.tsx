@@ -8,6 +8,7 @@ import Slide3 from '../Slide3/Slide3'
 import useForceUpdate from '../../utils/hooks/useForceUpdate'
 import Slide4 from '../Slide4/Slide4'
 import useLifecycle from '../../utils/hooks/useLifecycle'
+import properOnLoadPromise from '../../utils/dom/properOnLoadPromise'
 
 // export const AppContext=createContext(undefined)
 
@@ -20,10 +21,11 @@ export default function App(){
 
 	useLifecycle({componentDidMount})
 	const ref=useRef<any>()
+	const scrollContentRef=useRef<any>()
 	return (
 		// <AppContext.Provider value={{}}>
 		<div id="App" className={ref.current?.className} {...{ref}}>
-			<Scroll className="pos-abs fit-0 scroll-x smooth-wheel">{useMemo(()=>
+			<Scroll className="pos-abs fit-0 scroll-x smooth-wheel" ref={scrollContentRef}>{useMemo(()=>
 				<div className="scroll-content-wrapper f-horz">
 					<Slide1/>
 					<Slide2/>
@@ -38,8 +40,11 @@ export default function App(){
 		// </AppContext.Provider>
 	)
 
-	function componentDidMount(){
-		ref.current.classList.add('loaded')
-		setTimeout(()=>window.globalAutoResizeObserver.trigger(document.querySelector('.scroll-content-wrapper')!),2500)
+	async function componentDidMount(){
+		await properOnLoadPromise
+		const {current}=ref
+		current.classList.add('loaded')
+		current.addEventListener('animationend',()=>window.globalAutoResizeObserver.trigger(scrollContentRef.current))
 	}
 }
+

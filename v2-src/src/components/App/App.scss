@@ -1,24 +1,13 @@
 @import '../../_variables';
 
 #App{
-	// CSS handle small displays ------------------------------------------------
-	// min-width: 360px
-	// min-height: 480px
-	--zoomRatio: min(
-		min(1,var(--innerWidth) / 360),
-		min(1,var(--innerHeight) / 480)
-	);
-	transform: scale(var(--zoomRatio));
-	transform-origin: 0 0;
-	width: calc(100% / var(--zoomRatio));
-	height: calc(100% / var(--zoomRatio));
-	// ------------------------------------------------ CSS handle small displays
-
 	transition: opacity 5s;
 	&:not(.loaded){
 		opacity: 0;
 		.stamp{ transform: rotate(-1080deg) }
-		>.scroll-container>.scroll-viewport>.scroll-content-wrapper{ transform: translateX(1080px) }
+	}
+	&.loaded{
+		>.scroll-container>.scroll-viewport>.scroll-content-wrapper{ animation: slideInLeft 2s }
 	}
 	>.scroll-container{
 		// TODO: Trippy mode
@@ -30,6 +19,5 @@
 
 		background-image: url('../../assets/imgs/bg.png');
 		background-position: 45% 50%;
-		>.scroll-viewport>.scroll-content-wrapper{ transition: transform 2.5s }
 	}
 }

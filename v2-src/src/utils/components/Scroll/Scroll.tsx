@@ -8,11 +8,11 @@ import useLifecycle from '../../hooks/useLifecycle'
 import globalAutoResizeObserver from '../../dom/globalAutoResizeObserver'
 import useUuid from '../../hooks/useUuid'
 import usePreEffect from '../../hooks/usePreEffect'
+import isTrackpad from '../../dom/isTrackpad'
 
 // TODO: Fix smooth-wheel autoscroll jump issue
 // TODO: Fix smooth-wheel page-zoom issue
 // TODO: Fix smooth-wheel nested scroll issue
-// TODO: ScrollItem intersection observer (needed for parallax ScrollItem)
 // TODO-FUTURE: wheel css step multiplier
 // TODO-FUTURE: wheel css step acceleration
 // TODO-FUTURE: wheel css time dilation factor
@@ -218,6 +218,7 @@ function wheel(e:React.WheelEvent<HTMLElement>){
 	const scrollX=classList.contains('scroll-x')
 	const scrollY=classList.contains('scroll-y')
 	const smooth=classList.contains('smooth-wheel')
+	const trackpadMode=isTrackpad(e)
 
 	const {clientWidth,scrollWidth}=scrollViewport
 
@@ -226,7 +227,7 @@ function wheel(e:React.WheelEvent<HTMLElement>){
 		deltaX=deltaY
 		deltaY=0
 
-		if(!smooth){ // Smooth scrolling handled below
+		if(!(smooth && !trackpadMode)){ // Smooth scrolling handled below
 			// scrollViewport.scrollLeft+=e.deltaX
 			// Browser smooth scroll support
 			scrollViewport.scrollLeftTarget=clamp(scrollViewport.scrollLeftTarget+deltaX,0,scrollWidth-clientWidth)
@@ -235,8 +236,7 @@ function wheel(e:React.WheelEvent<HTMLElement>){
 	}
 
 	// Smooth scrolling
-	scrollViewport.smooth=smooth
-	if(smooth){
+	if(smooth && !trackpadMode){
 		e.preventDefault()
 		scrollViewport.duration=+getComputedStyle(scrollViewport).getPropertyValue('--smoothScrollDuration')
 		scrollX && smoothScrollXTo(scrollViewport,deltaX)

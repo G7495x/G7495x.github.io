@@ -14,7 +14,7 @@ export default function Slide4(){
 			</div>
 			<div className="col slide-left">
 				<div className="row f-vert gap-y-30 pr-30" style={{height: '100%'}}>
-					<ScrollItem className="slide-left pos-sty fit-l-0 ml-m30 pl-30 mr-auto">
+					<ScrollItem className="slide-left ml-m30 pl-30 mr-auto">
 						<div className="h7 text-muted">Some of,</div>
 						<h2 className="b900" style={{lineHeight: 1.125}}>My Works</h2>
 					</ScrollItem>
