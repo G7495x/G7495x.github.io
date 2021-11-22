@@ -228,7 +228,6 @@ function wheel(e:React.WheelEvent<HTMLElement>){
 		}
 	}
 
-	console.log(smoothMode)
 	// Smooth scrolling
 	if(smoothMode){
 		e.preventDefault()
