@@ -10,6 +10,7 @@ import useUuid from '../../hooks/useUuid'
 import usePreEffect from '../../hooks/usePreEffect'
 import isTrackpad from '../../dom/isTrackpad'
 
+// TODO: Poll resize
 // TODO: Fix smooth-wheel page-zoom issue
 // TODO: Fix smooth-wheel nested scroll issue
 // TODO-FUTURE: wheel css step multiplier

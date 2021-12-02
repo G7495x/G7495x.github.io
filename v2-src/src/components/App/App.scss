@@ -7,7 +7,7 @@
 		.stamp{ transform: rotate(-1080deg) }
 	}
 	&.loaded{
-		>.scroll-container>.scroll-viewport>.scroll-content-wrapper{ animation: slideInLeft 2s }
+		>.scroll-container>.scroll-viewport{ animation: slideInLeft 2s }
 	}
 	>.scroll-container{
 		// TODO: Trippy mode

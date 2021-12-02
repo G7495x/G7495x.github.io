@@ -13,6 +13,7 @@
 			color: hsla(var(--textHSL),.05);
 			-webkit-text-stroke: 1px hsla(var(--textHSL),.05);
 		}
+		.title{ font-size: 15px }
 		&:nth-child(2n-1){
 			transform: translateY(-50%); /*translateZ(calc(var(--scrollItemPhaseX) * .5px))*/
 			img{ padding-top: 1px; }
@@ -22,7 +23,7 @@
 			transform: translateY(50%); /*translateZ(calc(var(--scrollItemPhaseX) * .5px))*/
 			img{ padding-bottom: 1px; }
 			h1{ top: -.8em; }
-			.title{ top: -25px }
+			.title{ top: calc(-1.25em - 10px) }
 		}
 		.fa-behance{
 			@include bg-color(black);

@@ -23,7 +23,7 @@ export default function Slide4(){
 							{data.map((e,i)=><ScrollItem type={'a'} href={e.url} target="_blank" className="slide-left-xtra item-wrapper" key={e.url}>
 								<h1 className="b900 pos-abs">{String(i+1).padStart(2,'0')}</h1>
 								<img src={e.thumbnail}/>
-								<div className="pos-abs fit-x-30 title h7 py-5 b700 one-line">{e.title}</div>
+								<div className="pos-abs fit-x-30 title py-5 b600 one-line">{e.title}</div>
 								<ScrollItem className="fa fa-behance pos-abs super-center"/>
 							</ScrollItem>)}
 							<hr className="pos-abs fit-x-m15" style={{transform: 'translateY(calc(var(--clientHeight) * -1px + 1px))'}}/>

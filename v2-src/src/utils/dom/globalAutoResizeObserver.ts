@@ -1,3 +1,5 @@
+import properOnLoadPromise from './properOnLoadPromise'
+
 // TODO: listeners and dispatchEvents
 
 // 1. <div data-onresize="handlerName">
@@ -115,6 +117,13 @@ export function windowOnResize(){
 	style.setProperty('--outerHeight',String(window.outerHeight))
 	style.setProperty('--pixelRatio',String(window.devicePixelRatio))
 }
+
+// Onload trigger -------------------------------------------------------------
+
+properOnLoadPromise.then(()=>{
+	for(let e of document.body.querySelectorAll('[data-onresize]'))
+		window.globalAutoResizeObserver.trigger(e as HTMLElement)
+})
 
 // Exports --------------------------------------------------------------------
 

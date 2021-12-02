@@ -41,9 +41,11 @@ export default function App(){
 	)
 
 	async function componentDidMount(){
+		// @ts-expect-error TS2304: Cannot find name '__APP_VERSION__'.
+		console.log('v'+__APP_VERSION__!)
+
 		await properOnLoadPromise
 		setTimeout(()=>ref.current.classList.add('loaded'),1000)
-		// ref.current.addEventListener('animationend',()=>window.globalAutoResizeObserver.trigger(scrollContentRef.current))
 	}
 }
 

@@ -9,7 +9,6 @@ export interface ScrollItemProps extends PropsWithChildren<any>{
 
 }
 
-// TODO: .div JSX Dot notation
 export default memo(function ScrollItem({
 	type='div', // TODO: Change to itemType
 	className,

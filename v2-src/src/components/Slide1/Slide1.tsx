@@ -18,8 +18,8 @@ export default (function Slide1(){
 				<div className="text-section f-vert">
 					<div className="top-name my-10 text-muted small-caps"><b>G</b>hanashyam <b>S</b>ateesh</div>
 					<div className="f-grow"/>
-					<div className="vertical-text mb-10">
-						<span className="text-muted h7">
+					<div className="vertical-text mb-10 h6.5">
+						<span className="text-muted">
 							Hi,<br/>
 							I go by Ghanashyam...
 						</span>
@@ -27,7 +27,7 @@ export default (function Slide1(){
 							G7495x
 							<div className="stamp pos-abs super-center"><img src={stamp} alt=""/></div>
 						</div>
-						<div className="h7 text-muted">
+						<div className="text-muted">
 							{/*<i className="fa fa-exclamation-triangle mb-4"/>*/}
 							<div>Umm, website still under construction...</div>
 						</div>
