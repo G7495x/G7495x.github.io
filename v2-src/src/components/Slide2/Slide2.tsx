@@ -39,6 +39,10 @@ export default function Slide2(){
 							<i className="fa fa-github"/>
 							<span>Github<span className="h7 text-muted">.com/G7495x</span></span>
 						</a>
+						<a className="link outline" href="https://stackoverflow.com/story/G7495x" target="_blank">
+							<i className="fa fa-stack-overflow"/>
+							<span>StackOverflow<span className="h7 text-muted">.com/story/G7495x</span></span>
+						</a>
 						<a className="link outline" href="https://drive.google.com/file/d/1pWrv8tEhCGWyxy6kV5PFbPl1AM_iVEaB/view" target="_blank">
 							<i className="bi bi-file-pdf-fill"/>
 							<span>Resume <span className="h7 text-muted">(Google Drive)</span></span>

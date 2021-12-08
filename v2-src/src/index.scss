@@ -27,12 +27,12 @@ body,
 
 
 // CSS handle unusual displays ------------------------------------------------
-// min-width: 360px
+// min-width: 375px
 // min-height: 480px
 // max-height: 1080px
 #App{
 	--zoomRatio: min(
-		min(1,var(--innerWidth) / 360),
+		min(1,var(--innerWidth) / 375),
 		min(1,var(--innerHeight) / 480)
 	);
 	transform: scale(var(--zoomRatio));
@@ -73,11 +73,13 @@ hr,.vc{ opacity: .1 !important	; }
 
 .link{
 	@include f-center;
+	@include one-line;
 	position: relative;
 	height: 40px;
 	border: 1px solid hsla(var(--textHSL),.1);
 	border-radius: 10px;
 	padding-left: 55px;
+	//padding-right: 15px;
 	box-shadow: inset 40px 0 hsla(var(--textHSL),.1);
 	>.fa,.bi{
 		@include super-center;

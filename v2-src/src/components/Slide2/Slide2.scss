@@ -4,7 +4,7 @@
 	width: calc(var(--scrollClientWidth) * 1px);
 	@include media-breakpoint-up(sm){
 		margin-left: calc(var(--vertical-divider-width) * -1) !important;
-		width: 360px;
+		width: 375px;
 	}
 	// backdrop-filter: blur(16px);
 	background-image: linear-gradient(to bottom,rgba(black,0),rgba(black,1));

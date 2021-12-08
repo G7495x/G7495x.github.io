@@ -1,7 +1,7 @@
 @import '../../_variables';
 
 #Slide3{
-	width: calc(var(--scrollClientWidth) * 1px); @include media-breakpoint-up(sm){ width: 360px }
+	width: calc(var(--scrollClientWidth) * 1px); @include media-breakpoint-up(sm){ width: 375px }
 	//background-color: hsl(var(--bgHSL));
 	background-image: linear-gradient(to bottom,black,hsl(0,0%,2.5%));
 	.vertical-divider{ margin-right: 5px !important; }
